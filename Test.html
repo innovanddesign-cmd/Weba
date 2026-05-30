@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innova Social AR - MVP Simulator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+        .neon-glow-green {
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
+        }
+        .neon-glow-pink {
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+        }
+        .glass {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-premium {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        /* Custom camera scanning animation */
+        .scanner-line {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #6366f1, transparent);
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+        /* Shake animation for clashing elements */
+        .shake-element {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Branding -->
+    <header class="glass z-50 px-4 py-3 sticky top-0 flex items-center justify-between border-b border-gray-800">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center neon-glow">
+                <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+                <span class="font-extrabold text-white tracking-wider text-sm block">INNOVA</span>
+                <span class="text-[10px] text-indigo-400 font-semibold uppercase tracking-widest block -mt-1">Social AR</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span id="active-badge" class="px-2 py-1 rounded-full text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span> MVP Simulator
+            </span>
+        </div>
+    </header>
+
+    <!-- App Main Container -->
+    <main class="flex-grow flex flex-col justify-center items-center p-4 max-w-md mx-auto w-full">
+
+        <!-- Splash Screen / Mode Selection -->
+        <section id="screen-splash" class="w-full space-y-6 text-center py-6">
+            <div class="space-y-2">
+                <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500">
+                    Conecta a tus clientes. Eleva tu negocio.
+                </h1>
+                <p class="text-gray-400 text-sm max-w-xs mx-auto">
+                    La primera plataforma de Realidad Aumentada Colectiva diseñada para la mesa de restaurantes y pubs.
+                </p>
+            </div>
+
+            <!-- Visual Preview Image Simulated -->
+            <div class="relative rounded-2xl overflow-hidden border border-gray-800 h-48 bg-gray-950 flex items-center justify-center">
+                <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent"></div>
+                <!-- Interactive Floating AR Elements Simulated -->
+                <div class="relative z-10 text-center space-y-2 animate-bounce">
+                    <div class="inline-flex space-x-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-indigo-500/30 text-xs text-white">
+                        <span>✊</span><span>✋</span><span>✌️</span>
+                        <span class="font-bold text-indigo-300">¡Reto de Mesa!</span>
+                    </div>
+                    <div class="text-xs text-indigo-200 opacity-80">Apunta a tu posavasos o menú</div>
+                </div>
+            </div>
+
+            <!-- Mode Selector Cards -->
+            <div class="space-y-3 pt-2">
+                <button onclick="changeScreen('screen-client-setup')" class="w-full flex items-center justify-between p-4 rounded-xl glass hover:border-indigo-500 transition duration-300 group text-left">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-3 bg-indigo-600/20 text-indigo-400 rounded-lg group-hover:bg-indigo-600 group-hover:text-white transition">
+                            <i data-lucide="smartphone"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-sm">Demo Cliente (Mesa de Juego)</h3>
+                            <p class="text-gray-400 text-xs">Simula el juego interactivo en AR</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="text-gray-500 group-hover:text-indigo-400 transition"></i>
+                </button>
+
+                <button onclick="changeScreen('screen-owner-dash')" class="w-full flex items-center justify-between p-4 rounded-xl glass hover:border-emerald-500 transition duration-300 group text-left">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-3 bg-emerald-600/20 text-emerald-400 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition">
+                            <i data-lucide="bar-chart-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-sm">Dashboard Propietario</h3>
+                            <p class="text-gray-400 text-xs">Analíticas, leads y retorno para el bar</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="text-gray-500 group-hover:text-emerald-400 transition"></i>
+                </button>
+            </div>
+
+            <div class="text-center pt-4">
+                <p class="text-[10px] text-gray-500 font-mono">Diseñado por Innova and Design &copy; 2026</p>
+            </div>
+        </section>
+
+        <!-- Screen 2: Client Setup (Mesa de Juego) -->
+        <section id="screen-client-setup" class="w-full space-y-5 hidden">
+            <button onclick="changeScreen('screen-splash')" class="flex items-center space-x-1 text-xs text-gray-400 hover:text-white">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> <span>Volver</span>
+            </button>
+
+            <div class="space-y-1">
+                <h2 class="text-2xl font-bold text-white">¡Únete a la Mesa!</h2>
+                <p class="text-gray-400 text-xs">Introduce los datos para simular tu ingreso a la mesa sincronizada.</p>
+            </div>
+
+            <div class="glass p-5 rounded-2xl space-y-4">
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">Número de Mesa</label>
+                    <div class="relative">
+                        <i data-lucide="hash" class="absolute left-3 top-3 text-indigo-400 w-4 h-4"></i>
+                        <input id="input-table" type="number" value="12" class="w-full bg-gray-900/60 border border-gray-700 rounded-xl py-2 px-10 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">Tu Nombre / Nickname</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="absolute left-3 top-3 text-indigo-400 w-4 h-4"></i>
+                        <input id="input-username" type="text" placeholder="Ej. Carlos" class="w-full bg-gray-900/60 border border-gray-700 rounded-xl py-2 px-10 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">Jugadores Simulados en la Mesa</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setPlayerCount(2)" id="btn-p2" class="py-2 rounded-xl text-xs font-semibold bg-gray-900 border border-gray-700 text-gray-400 transition active-player-btn">2 Jugadores</button>
+                        <button onclick="setPlayerCount(3)" id="btn-p3" class="py-2 rounded-xl text-xs font-semibold bg-indigo-600/20 border border-indigo-500 text-indigo-300 transition active-player-btn">3 Jugadores</button>
+                        <button onclick="setPlayerCount(4)" id="btn-p4" class="py-2 rounded-xl text-xs font-semibold bg-gray-900 border border-gray-700 text-gray-400 transition active-player-btn">4 Jugadores</button>
+                    </div>
+                </div>
+
+                <button onclick="startARSetup()" class="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-500 transition shadow-lg neon-glow flex items-center justify-center space-x-2">
+                    <i data-lucide="aperture" class="w-4 h-4"></i>
+                    <span>Iniciar Realidad Aumentada</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Screen 3: WebAR Camera / Target Search -->
+        <section id="screen-ar-camera" class="w-full hidden relative flex-grow flex flex-col justify-between h-[80vh]">
+            <!-- Embedded Camera Feed Simulation -->
+            <div class="absolute inset-0 rounded-3xl overflow-hidden border-2 border-indigo-500/50 bg-black">
+                <video id="webcam-feed" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+                <div id="fallback-bg" class="w-full h-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="absolute inset-0 bg-black/40"></div>
+                
+                <!-- Target Scanning Overlay -->
+                <div id="ar-scanner" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                    <div class="scanner-line absolute left-0 right-0"></div>
+                    
+                    <!-- Simulating the Target Box/Marker -->
+                    <div class="w-48 h-48 border-2 border-dashed border-indigo-400 rounded-2xl flex items-center justify-center animate-pulse relative">
+                        <div class="absolute -top-1 -left-1 w-4 h-4 border-t-4 border-l-4 border-indigo-400"></div>
+                        <div class="absolute -top-1 -right-1 w-4 h-4 border-t-4 border-r-4 border-indigo-400"></div>
+                        <div class="absolute -bottom-1 -left-1 w-4 h-4 border-b-4 border-l-4 border-indigo-400"></div>
+                        <div class="absolute -bottom-1 -right-1 w-4 h-4 border-b-4 border-r-4 border-indigo-400"></div>
+                        <i data-lucide="qr-code" class="w-16 h-16 text-indigo-400/40"></i>
+                    </div>
+                    <p class="text-white text-xs font-bold mt-4 bg-black/60 px-3 py-1.5 rounded-full border border-indigo-500/30">
+                        Apunta la cámara al código QR de la mesa
+                    </p>
+                </div>
+            </div>
+
+            <!-- UI top bar -->
+            <div class="relative z-10 flex items-center justify-between p-4">
+                <button onclick="stopARAndReturn()" class="px-3 py-1.5 rounded-full bg-black/60 backdrop-blur border border-gray-700 text-xs flex items-center space-x-1">
+                    <i data-lucide="x" class="w-3.5 h-3.5"></i> <span>Salir</span>
+                </button>
+                <div class="px-3 py-1.5 rounded-full bg-black/60 backdrop-blur border border-indigo-500/30 text-xs text-indigo-300 font-mono">
+                    Mesa <span id="ar-table-num">12</span>
+                </div>
+            </div>
+
+            <!-- Mock players joined status -->
+            <div class="relative z-10 p-4 space-y-3">
+                <div id="players-list-panel" class="flex justify-center space-x-2">
+                    <!-- Dynamic generation of current players status -->
+                </div>
+                
+                <!-- Action trigger when marker is "detected" -->
+                <div id="marker-detected-btn" class="w-full hidden">
+                    <button onclick="triggerGameStart()" class="w-full py-3 rounded-xl bg-emerald-600 text-white font-extrabold text-sm hover:bg-emerald-500 transition shadow-lg neon-glow-green flex items-center justify-center space-x-2 animate-bounce">
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                        <span>¡Marker Detectado! Empezar Duelo</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Screen 4: The Game Scene (Piedra, Papel, Tijera AR) -->
+        <section id="screen-game-arena" class="w-full hidden relative flex-grow flex flex-col justify-between h-[80vh]">
+            <!-- Game Background Simulation -->
+            <div class="absolute inset-0 rounded-3xl overflow-hidden border-2 border-indigo-500/50 bg-gray-950">
+                <div id="game-camera-sim" class="w-full h-full bg-cover bg-center opacity-30" style="background-image: url('https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent"></div>
+            </div>
+
+            <!-- Header of game status -->
+            <div class="relative z-10 flex items-center justify-between p-4 bg-black/40 backdrop-blur-sm rounded-t-3xl border-b border-gray-800">
+                <div class="flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-xs text-gray-300 font-semibold">Sala Sincronizada</span>
+                </div>
+                <div class="text-xs font-bold text-indigo-400" id="game-round-text">RONDA 1</div>
+            </div>
+
+            <!-- Center Stage: AR Arena showing choices collision -->
+            <div class="relative z-10 flex-grow flex flex-col items-center justify-center p-4">
+                
+                <!-- Countdown Overlay -->
+                <div id="countdown-wrapper" class="hidden text-center space-y-2">
+                    <div id="countdown-number" class="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-pink-500 scale-95 transition-all duration-300">3</div>
+                    <div class="text-xs text-gray-400 uppercase tracking-widest font-semibold">¡Prepara tu mano!</div>
+                </div>
+
+                <!-- Active Arena Combat Visualization -->
+                <div id="clash-arena" class="w-full flex flex-col items-center justify-center space-y-6">
+                    <!-- Competitors Choices Area (Grid layout of players choice) -->
+                    <div id="arena-players-display" class="grid grid-cols-2 gap-4 w-full px-4">
+                        <!-- Filled dynamically based on players number -->
+                    </div>
+                </div>
+
+                <div id="game-narrator" class="text-center mt-6 hidden">
+                    <p id="narrator-text" class="text-sm font-bold text-indigo-200 px-4 py-2 rounded-full bg-indigo-950/40 border border-indigo-500/20 inline-block"></p>
+                </div>
+            </div>
+
+            <!-- User Options / Hand Selection Panel -->
+            <div id="user-selection-panel" class="relative z-10 p-4 space-y-3 bg-black/60 backdrop-blur border-t border-gray-800 rounded-b-3xl">
+                <p class="text-xs text-center text-gray-400 font-medium">Elige tu movimiento en la mesa:</p>
+                <div class="grid grid-cols-3 gap-3">
+                    <button onclick="submitUserChoice('rock')" class="choice-btn py-3 px-2 rounded-xl glass-premium hover:border-indigo-500 hover:scale-105 transition flex flex-col items-center justify-center space-y-2">
+                        <span class="text-2xl">✊</span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-300">Piedra</span>
+                    </button>
+                    <button onclick="submitUserChoice('paper')" class="choice-btn py-3 px-2 rounded-xl glass-premium hover:border-indigo-500 hover:scale-105 transition flex flex-col items-center justify-center space-y-2">
+                        <span class="text-2xl">✋</span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-300">Papel</span>
+                    </button>
+                    <button onclick="submitUserChoice('scissors')" class="choice-btn py-3 px-2 rounded-xl glass-premium hover:border-indigo-500 hover:scale-105 transition flex flex-col items-center justify-center space-y-2">
+                        <span class="text-2xl">✌️</span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-gray-300">Tijera</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Screen 5: Lead Capture (The Gateway / Puerta de Enlace) -->
+        <section id="screen-lead-capture" class="w-full space-y-5 hidden">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-pink-500/20 text-pink-500 rounded-full flex items-center justify-center mx-auto neon-glow-pink">
+                    <i data-lucide="gift" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-black text-white">¡Ronda Final Completada!</h2>
+                <p class="text-gray-400 text-xs px-6">
+                    Has quedado entre los finalistas de la <span class="text-indigo-400 font-bold">Mesa 12</span>. ¡Reclama tu premio colectivo ahora!
+                </p>
+            </div>
+
+            <div class="glass p-5 rounded-2xl space-y-4">
+                <div class="p-3 bg-indigo-950/40 border border-indigo-500/20 rounded-xl flex items-start space-x-3">
+                    <i data-lucide="info" class="text-indigo-400 w-5 h-5 flex-shrink-0 mt-0.5"></i>
+                    <p class="text-xs text-indigo-200">
+                        <strong>Premio Colectivo:</strong> 1 Ronda de chupitos gratis para toda la mesa o un 15% de descuento directo.
+                    </p>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">Tu Correo Electrónico</label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="absolute left-3 top-3 text-indigo-400 w-4 h-4"></i>
+                        <input id="input-email" type="email" placeholder="carlos@gmail.com" class="w-full bg-gray-900/60 border border-gray-700 rounded-xl py-2 px-10 text-white focus:outline-none focus:border-indigo-500 text-sm">
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-2">
+                    <input id="check-privacy" type="checkbox" checked class="mt-1 bg-gray-900 border-gray-700 rounded text-indigo-600 focus:ring-indigo-500">
+                    <label class="text-[10px] text-gray-400">Acepto los términos de uso y consiento el envío de promociones exclusivas del local según RGPD.</label>
+                </div>
+
+                <button onclick="submitLeadData()" class="w-full py-3 rounded-xl bg-pink-600 text-white font-bold text-sm hover:bg-pink-500 transition shadow-lg neon-glow-pink flex items-center justify-center space-x-2">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>Desbloquear Premio de Mesa</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Screen 6: Reward Coupon Presentation -->
+        <section id="screen-reward" class="w-full space-y-6 hidden text-center">
+            <div class="space-y-1">
+                <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-500">¡Premio Conseguido!</h2>
+                <p class="text-gray-400 text-xs">Enseña este cupón holográfico en la barra para canjear.</p>
+            </div>
+
+            <!-- Interactive Golden Ticket / Coupon -->
+            <div class="glass-premium p-6 rounded-2xl space-y-4 max-w-xs mx-auto border-2 border-amber-500/40 neon-glow">
+                <div class="flex justify-between items-center text-[10px] font-mono text-amber-400 tracking-widest">
+                    <span>INNOVA SOCIAL AR</span>
+                    <span>TICKET #9822</span>
+                </div>
+                
+                <div class="py-4 border-y border-dashed border-gray-700 space-y-1">
+                    <div class="text-sm font-semibold text-gray-400 uppercase tracking-wider">PREMIO EXCLUSIVO MESA 12</div>
+                    <div class="text-3xl font-extrabold text-white">RONDA CHUPITOS</div>
+                    <div class="text-xs text-amber-300 font-semibold">100% GRATIS (Con consumición)</div>
+                </div>
+
+                <!-- Simulating QR Validation -->
+                <div class="bg-white p-3 rounded-xl inline-block">
+                    <canvas id="qr-canvas" class="w-32 h-32 bg-gray-200"></canvas>
+                </div>
+
+                <p class="text-[10px] text-gray-400">Válido únicamente para el día de hoy.</p>
+            </div>
+
+            <!-- Option to see metrics / dashboard -->
+            <div class="space-y-3 pt-4">
+                <button onclick="restartDemoFlow()" class="w-full py-2.5 rounded-xl border border-gray-700 text-gray-300 text-xs font-semibold hover:bg-gray-900 transition flex items-center justify-center space-x-1">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i> <span>Volver a jugar / Reiniciar demo</span>
+                </button>
+                <button onclick="goToOwnerDashboardFromGame()" class="w-full py-2.5 rounded-xl bg-emerald-600/20 border border-emerald-500 text-emerald-300 text-xs font-semibold hover:bg-emerald-600 hover:text-white transition flex items-center justify-center space-x-2">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span>Ver Panel del Propietario (Métricas)</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Screen 7: Owner / Business Dashboard -->
+        <section id="screen-owner-dash" class="w-full space-y-6 hidden">
+            <div class="flex items-center justify-between">
+                <button onclick="changeScreen('screen-splash')" class="flex items-center space-x-1 text-xs text-gray-400 hover:text-white">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> <span>Volver a Inicio</span>
+                </button>
+                <div class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                    SaaS Activo
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <h2 class="text-2xl font-black text-white">Control Propietario</h2>
+                <p class="text-gray-400 text-xs">Métricas en tiempo real recopiladas por el sistema en el pub.</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 gap-3">
+                <div class="glass p-4 rounded-xl space-y-1">
+                    <div class="flex justify-between text-gray-400">
+                        <span class="text-[10px] font-bold uppercase tracking-wider">Leads Totales</span>
+                        <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i>
+                    </div>
+                    <div class="text-2xl font-extrabold text-white" id="stat-leads-count">342</div>
+                    <p class="text-[9px] text-emerald-400 flex items-center"><i data-lucide="trending-up" class="w-3 h-3 mr-0.5"></i> +14% esta semana</p>
+                </div>
+
+                <div class="glass p-4 rounded-xl space-y-1">
+                    <div class="flex justify-between text-gray-400">
+                        <span class="text-[10px] font-bold uppercase tracking-wider">Estancia Media</span>
+                        <i data-lucide="clock" class="w-4 h-4 text-indigo-400"></i>
+                    </div>
+                    <div class="text-2xl font-extrabold text-white">+18.4 <span class="text-xs font-normal text-gray-400">min</span></div>
+                    <p class="text-[9px] text-indigo-300">Retención orgánica en mesa</p>
+                </div>
+
+                <div class="glass p-4 rounded-xl space-y-1">
+                    <div class="flex justify-between text-gray-400">
+                        <span class="text-[10px] font-bold uppercase tracking-wider">Ingreso Extra Est.</span>
+                        <i data-lucide="dollar-sign" class="w-4 h-4 text-emerald-400"></i>
+                    </div>
+                    <div class="text-2xl font-extrabold text-white">€1,450</div>
+                    <p class="text-[9px] text-emerald-400">Por segundas consumiciones</p>
+                </div>
+
+                <div class="glass p-4 rounded-xl space-y-1">
+                    <div class="flex justify-between text-gray-400">
+                        <span class="text-[10px] font-bold uppercase tracking-wider">Conversión Leads</span>
+                        <i data-lucide="percent" class="w-4 h-4 text-indigo-400"></i>
+                    </div>
+                    <div class="text-2xl font-extrabold text-white">48.2%</div>
+                    <p class="text-[9px] text-indigo-300">Tasa de escaneo/registro</p>
+                </div>
+            </div>
+
+            <!-- Live Captures & Webhook simulator -->
+            <div class="glass p-4 rounded-xl space-y-3">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-200">Últimos Leads Registrados (Simulación)</h3>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                </div>
+                
+                <div class="space-y-2 max-h-40 overflow-y-auto pr-1" id="dash-leads-list">
+                    <!-- Loaded dynamically with preloaded and captured leads -->
+                </div>
+            </div>
+
+            <!-- Webhook Connection Info -->
+            <div class="glass p-4 rounded-xl space-y-2">
+                <div class="flex items-center space-x-2 text-indigo-300">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    <h3 class="text-xs font-bold uppercase tracking-wider">Webhook de Automatización n8n</h3>
+                </div>
+                <p class="text-[11px] text-gray-400">
+                    Cada vez que un cliente canjea un cupón, el sistema envía un payload JSON a tu sistema n8n/CRM para el seguimiento.
+                </p>
+                <div class="bg-black/80 rounded-lg p-2.5 text-[10px] font-mono text-emerald-400 overflow-x-auto whitespace-pre border border-gray-800">
+{
+  "event": "social_ar_lead_capture",
+  "appId": "innova-social-ar-benidorm",
+  "data": {
+    "name": "Carlos",
+    "email": "carlos@gmail.com",
+    "table": 12,
+    "prize": "Ronda Chupitos Gratis",
+    "timestamp": "2026-05-31T01:02:00Z"
+  }
+}</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer static notifications (no browsers alerts allowed) -->
+    <div id="toast-container" class="fixed bottom-4 left-4 right-4 z-50 pointer-events-none flex flex-col items-center space-y-2"></div>
+
+    <!-- Scripting for entire interactivity simulator -->
+    <script>
+        // State Management
+        let currentScreen = 'screen-splash';
+        let playerCount = 3;
+        let username = '';
+        let tableNumber = 12;
+        let emailInput = '';
+        let userChoice = '';
+        let simulatedPlayers = [];
+        let leadsDatabase = [
+            { name: "Sonia G.", email: "sonia.g@yahoo.com", table: 4, prize: "Descuento 15%", time: "Hace 4 min" },
+            { name: "Alex M.", email: "alex92@gmail.com", table: 8, prize: "Ronda Chupitos", time: "Hace 14 min" },
+            { name: "John Doe", email: "johndoe@hotmail.com", table: 12, prize: "Ronda Chupitos", time: "Hace 31 min" }
+        ];
+
+        // Init Lucide Icons on start
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            setPlayerCount(3);
+            drawQRCodePlaceholder();
+            updateLeadsList();
+        });
+
+        // Navigation
+        function changeScreen(screenId) {
+            document.getElementById(currentScreen).classList.add('hidden');
+            document.getElementById(screenId).classList.remove('hidden');
+            currentScreen = screenId;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Camera control
+            if (screenId === 'screen-ar-camera') {
+                startWebcam();
+            } else {
+                stopWebcam();
+            }
+        }
+
+        // Set simulated players quantity
+        function setPlayerCount(count) {
+            playerCount = count;
+            document.querySelectorAll('.active-player-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600/20', 'border-indigo-500', 'text-indigo-300');
+                btn.classList.add('bg-gray-900', 'border-gray-700', 'text-gray-400');
+            });
+
+            const activeBtn = document.getElementById(`btn-p${count}`);
+            activeBtn.classList.add('bg-indigo-600/20', 'border-indigo-500', 'text-indigo-300');
+            activeBtn.classList.remove('bg-gray-900', 'border-gray-700', 'text-gray-400');
+        }
+
+        // Camera Simulation (Utilizing real media devices if available)
+        let videoStream = null;
+        function startWebcam() {
+            const video = document.getElementById('webcam-feed');
+            const fallback = document.getElementById('fallback-bg');
+            
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(stream => {
+                    videoStream = stream;
+                    video.srcObject = stream;
+                    video.classList.remove('hidden');
+                    fallback.classList.add('hidden');
+                    showToast("Cámara de Realidad Aumentada activada");
+                })
+                .catch(err => {
+                    console.warn("Camera access denied or unavailable. Fallback view displayed.");
+                    video.classList.add('hidden');
+                    fallback.classList.remove('hidden');
+                });
+
+            // Auto marker detection simulation after 2.5 seconds
+            document.getElementById('ar-scanner').classList.remove('hidden');
+            document.getElementById('marker-detected-btn').classList.add('hidden');
+            
+            setTimeout(() => {
+                // Mock detecting marker
+                document.getElementById('ar-scanner').classList.add('hidden');
+                document.getElementById('marker-detected-btn').classList.remove('hidden');
+                playSynthBeep(600, 0.15);
+                showToast("¡Soporte de Mesa detectado con éxito!", "emerald");
+            }, 2500);
+
+            // Populate mock players
+            generateMockPlayersList();
+        }
+
+        function stopWebcam() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+        }
+
+        function stopARAndReturn() {
+            stopWebcam();
+            changeScreen('screen-client-setup');
+        }
+
+        function startARSetup() {
+            username = document.getElementById('input-username').value.trim() || 'Jugador 1';
+            tableNumber = document.getElementById('input-table').value || 12;
+            document.getElementById('ar-table-num').innerText = tableNumber;
+            changeScreen('screen-ar-camera');
+        }
+
+        // Mock Multiplayer logic
+        function generateMockPlayersList() {
+            const container = document.getElementById('players-list-panel');
+            container.innerHTML = '';
+
+            // User
+            const userBadge = document.createElement('div');
+            userBadge.className = "px-3 py-1 rounded-lg bg-indigo-600/60 backdrop-blur border border-indigo-500 text-[10px] text-white font-bold flex items-center space-x-1";
+            userBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> <span>${username} (Tú)</span>`;
+            container.appendChild(userBadge);
+
+            // Mock other players connected in real-time
+            simulatedPlayers = [];
+            const mockNames = ["David", "Laura", "Elena", "Rafa"];
+            for (let i = 0; i < playerCount - 1; i++) {
+                const name = mockNames[i % mockNames.length];
+                simulatedPlayers.push({ name: name, active: true, choice: '' });
+
+                const badge = document.createElement('div');
+                badge.className = "px-3 py-1 rounded-lg bg-black/60 backdrop-blur border border-gray-700 text-[10px] text-gray-300 font-medium flex items-center space-x-1";
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> <span>${name}</span>`;
+                container.appendChild(badge);
+            }
+        }
+
+        // Gameplay Logic
+        function triggerGameStart() {
+            changeScreen('screen-game-arena');
+            startCountDown();
+        }
+
+        function startCountDown() {
+            const countdownWrapper = document.getElementById('countdown-wrapper');
+            const countdownNumber = document.getElementById('countdown-number');
+            const clashArena = document.getElementById('clash-arena');
+            const selectionPanel = document.getElementById('user-selection-panel');
+            const narrator = document.getElementById('game-narrator');
+
+            narrator.classList.add('hidden');
+            clashArena.classList.add('hidden');
+            selectionPanel.classList.add('pointer-events-none', 'opacity-50');
+            countdownWrapper.classList.remove('hidden');
+
+            let seconds = 3;
+            countdownNumber.innerText = seconds;
+            playSynthBeep(400, 0.1);
+
+            const interval = setInterval(() => {
+                seconds--;
+                if (seconds > 0) {
+                    countdownNumber.innerText = seconds;
+                    playSynthBeep(400, 0.1);
+                } else if (seconds === 0) {
+                    countdownNumber.innerText = "¡YA!";
+                    playSynthBeep(800, 0.2);
+                } else {
+                    clearInterval(interval);
+                    countdownWrapper.classList.add('hidden');
+                    selectionPanel.classList.remove('pointer-events-none', 'opacity-50');
+                    showArenaPreparation();
+                }
+            }, 1000);
+        }
+
+        function showArenaPreparation() {
+            const clashArena = document.getElementById('clash-arena');
+            const arenaDisplay = document.getElementById('arena-players-display');
+            clashArena.classList.remove('hidden');
+            arenaDisplay.innerHTML = '';
+
+            // User placeholder
+            const userCard = createArenaPlayerCard(username, '?', true);
+            arenaDisplay.appendChild(userCard);
+
+            // Mock competitors placeholders
+            simulatedPlayers.forEach(p => {
+                const competitorCard = createArenaPlayerCard(p.name, 'Pensando...', false);
+                arenaDisplay.appendChild(competitorCard);
+            });
+        }
+
+        function createArenaPlayerCard(name, status, isUser) {
+            const col = document.createElement('div');
+            col.className = `p-4 rounded-2xl border text-center space-y-2 transition duration-300 ${isUser ? 'bg-indigo-950/40 border-indigo-500/40' : 'bg-gray-900/60 border-gray-800'}`;
+            col.id = `arena-card-${name}`;
+            col.innerHTML = `
+                <div class="text-[10px] font-bold tracking-wider text-gray-400 uppercase">${name}</div>
+                <div class="text-3xl py-2" id="choice-icon-${name}">💭</div>
+                <div class="text-xs text-indigo-400 font-medium" id="status-text-${name}">${status}</div>
+            `;
+            return col;
+        }
+
+        function submitUserChoice(choice) {
+            userChoice = choice;
+            playSynthBeep(500, 0.08);
+
+            // Change selection UI active states
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-500', 'bg-indigo-600/10');
+            });
+            event.currentTarget.classList.add('border-indigo-500', 'bg-indigo-600/10');
+
+            // Set user choice display in arena
+            document.getElementById(`choice-icon-${username}`).innerText = getChoiceEmoji(choice);
+            document.getElementById(`status-text-${username}`).innerText = "¡Listo!";
+            document.getElementById(`status-text-${username}`).className = "text-xs text-emerald-400 font-bold";
+
+            // Disable selection panel while resolving simulation
+            document.getElementById('user-selection-panel').classList.add('pointer-events-none', 'opacity-50');
+
+            // Trigger AI/Mock players choice in sequence
+            let delay = 600;
+            simulatedPlayers.forEach((player, idx) => {
+                setTimeout(() => {
+                    const options = ['rock', 'paper', 'scissors'];
+                    player.choice = options[Math.floor(Math.random() * options.length)];
+                    document.getElementById(`choice-icon-${player.name}`).innerText = "✅";
+                    document.getElementById(`status-text-${player.name}`).innerText = "¡Listo!";
+                    document.getElementById(`status-text-${player.name}`).className = "text-xs text-emerald-400 font-bold";
+                    playSynthBeep(450 + (idx * 50), 0.05);
+
+                    // If it is the last competitor, resolve the combat
+                    if (idx === simulatedPlayers.length - 1) {
+                        setTimeout(resolveCombat, 1000);
+                    }
+                }, delay);
+                delay += 500;
+            });
+        }
+
+        function getChoiceEmoji(choice) {
+            switch(choice) {
+                case 'rock': return '✊';
+                case 'paper': return '✋';
+                case 'scissors': return '✌️';
+                default: return '❓';
+            }
+        }
+
+        function resolveCombat() {
+            // Shake arena screen
+            const clashArena = document.getElementById('clash-arena');
+            clashArena.classList.add('shake-element');
+            playSynthBeep(250, 0.4);
+
+            setTimeout(() => {
+                clashArena.classList.remove('shake-element');
+            }, 500);
+
+            // Display actual choices
+            document.getElementById(`choice-icon-${username}`).innerText = getChoiceEmoji(userChoice);
+            simulatedPlayers.forEach(p => {
+                document.getElementById(`choice-icon-${p.name}`).innerText = getChoiceEmoji(p.choice);
+            });
+
+            // Calculate winners
+            // 1. Compile all scores
+            const choices = { [username]: userChoice };
+            simulatedPlayers.forEach(p => { choices[p.name] = p.choice; });
+
+            // In this simulated environment, we force a spectacular finish where the user always advances to create the gamified dopamine experience!
+            // Let's make user win/draw but never fail immediately on mock demo so they see the lead screen.
+            const results = determineWinners(choices);
+            
+            const narrator = document.getElementById('game-narrator');
+            const narratorText = document.getElementById('narrator-text');
+            narrator.classList.remove('hidden');
+
+            if (results.winners.includes(username)) {
+                narratorText.innerText = `🎉 ¡Ganaste la ronda! Eres el líder de la Mesa ${tableNumber}`;
+                narratorText.className = "text-sm font-bold text-emerald-300 px-4 py-2 rounded-full bg-emerald-950/40 border border-emerald-500/20 inline-block";
+                playSynthWin();
+                
+                // Advance to Lead screen after 3 seconds
+                setTimeout(() => {
+                    changeScreen('screen-lead-capture');
+                }, 3000);
+            } else {
+                narratorText.innerText = "🤝 ¡Empate épico! Volviendo a calcular fuerzas...";
+                narratorText.className = "text-sm font-bold text-amber-300 px-4 py-2 rounded-full bg-amber-950/40 border border-amber-500/20 inline-block";
+                
+                setTimeout(() => {
+                    startCountDown();
+                }, 3000);
+            }
+        }
+
+        function determineWinners(choices) {
+            // Simplified logic: filter unique choices to see if there is an absolute winner or tie.
+            const uniqueChoices = [...new Set(Object.values(choices))];
+            
+            // If everyone chooses same thing or all 3 options are selected, it's a tie.
+            if (uniqueChoices.length === 1 || uniqueChoices.length === 3) {
+                return { winners: Object.keys(choices), tie: true };
+            }
+
+            // Standard game rules with 2 unique selections
+            const winMap = { rock: 'scissors', paper: 'rock', scissors: 'paper' };
+            const winnerChoice = uniqueChoices.find(c => winMap[c] === uniqueChoices.find(o => o !== c));
+
+            const winners = [];
+            Object.entries(choices).forEach(([name, choice]) => {
+                if (choice === winnerChoice) winners.push(name);
+            });
+
+            return { winners, tie: false };
+        }
+
+        // Lead Submission
+        function submitLeadData() {
+            const emailInput = document.getElementById('input-email').value.trim();
+            const privacyChecked = document.getElementById('check-privacy').checked;
+
+            if (!emailInput || !emailInput.includes('@')) {
+                showToast("Por favor, introduce un correo válido.", "pink");
+                return;
+            }
+
+            if (!privacyChecked) {
+                showToast("Debes aceptar las políticas de privacidad.", "pink");
+                return;
+            }
+
+            // Simulate Webhook sending
+            playSynthWin();
+            showToast("¡Enviando datos al CRM / n8n...", "emerald");
+
+            // Add new lead to simulated local database
+            const newLead = {
+                name: username,
+                email: emailInput,
+                table: parseInt(tableNumber),
+                prize: "Ronda Chupitos",
+                time: "Ahora mismo"
+            };
+            leadsDatabase.unshift(newLead);
+            updateLeadsList();
+
+            // Increment owner count dashboard count
+            const currLeads = parseInt(document.getElementById('stat-leads-count').innerText);
+            document.getElementById('stat-leads-count').innerText = currLeads + 1;
+
+            setTimeout(() => {
+                changeScreen('screen-reward');
+            }, 1200);
+        }
+
+        function restartDemoFlow() {
+            // Reset fields
+            document.getElementById('input-username').value = '';
+            document.getElementById('input-email').value = '';
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-500', 'bg-indigo-600/10');
+            });
+            changeScreen('screen-client-setup');
+        }
+
+        function goToOwnerDashboardFromGame() {
+            changeScreen('screen-owner-dash');
+        }
+
+        // Owner Dashboard Sync
+        function updateLeadsList() {
+            const list = document.getElementById('dash-leads-list');
+            list.innerHTML = '';
+
+            leadsDatabase.forEach(lead => {
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between p-2.5 rounded-lg bg-gray-900/60 border border-gray-800 text-xs";
+                item.innerHTML = `
+                    <div class="space-y-0.5">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="font-bold text-white">${lead.name}</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-indigo-500/10 text-indigo-300 font-semibold border border-indigo-500/20">Mesa ${lead.table}</span>
+                        </div>
+                        <div class="text-[10px] text-gray-500">${lead.email}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] text-emerald-400 font-bold font-mono">${lead.prize}</div>
+                        <div class="text-[9px] text-gray-500">${lead.time}</div>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // Simple Notification helper
+        function showToast(message, type = "indigo") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgClass = "bg-indigo-950 border-indigo-500 text-indigo-200";
+            if (type === "emerald") bgClass = "bg-emerald-950 border-emerald-500 text-emerald-200";
+            if (type === "pink") bgClass = "bg-pink-950 border-pink-500 text-pink-200";
+
+            toast.className = `p-3 rounded-xl border shadow-lg text-xs font-semibold ${bgClass} transition-all duration-300 transform translate-y-2 opacity-0 flex items-center space-x-2`;
+            toast.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            // Out and destroy
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Audio Effects Generator utilizing Web Audio API
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioCtx;
+        }
+
+        function playSynthBeep(frequency, duration) {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(frequency, ctx.currentTime);
+                
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.warn("Web Audio API not supported/blocked yet by browser interaction.");
+            }
+        }
+
+        function playSynthWin() {
+            playSynthBeep(523.25, 0.1); // C5
+            setTimeout(() => playSynthBeep(659.25, 0.1), 100); // E5
+            setTimeout(() => playSynthBeep(783.99, 0.15), 200); // G5
+            setTimeout(() => playSynthBeep(1046.50, 0.3), 300); // C6
+        }
+
+        // Generate dynamic mock QR on canvas for validation presentation
+        function drawQRCodePlaceholder() {
+            const canvas = document.getElementById('qr-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Mocking QR patterns
+            ctx.fillStyle = '#1e1b4b';
+            // Corners
+            ctx.fillRect(10, 10, 30, 30);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(15, 15, 20, 20);
+            ctx.fillStyle = '#1e1b4b';
+            ctx.fillRect(20, 20, 10, 10);
+
+            ctx.fillRect(90, 10, 30, 30);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(95, 15, 20, 20);
+            ctx.fillStyle = '#1e1b4b';
+            ctx.fillRect(100, 20, 10, 10);
+
+            ctx.fillRect(10, 90, 30, 30);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(15, 95, 20, 20);
+            ctx.fillStyle = '#1e1b4b';
+            ctx.fillRect(20, 100, 10, 10);
+
+            // Random dots
+            for(let i=0; i<40; i++) {
+                const x = 45 + Math.random() * 40;
+                const y = 45 + Math.random() * 40;
+                ctx.fillStyle = '#1e1b4b';
+                ctx.fillRect(x, y, 6, 6);
+            }
+        }
+    </script>
+</body>
+</html>
