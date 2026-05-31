@@ -1,0 +1,2463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Innova and Design · Diseño, Código y Automatización · Benidorm</title>
+  <meta name="description" content="Agencia digital en Benidorm especializada en presencia digital QR, diseño web, diseño gráfico, marketing y automatización con IA. Más de 40 clientes en Costa Blanca." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #080808; color: #fff; font-family: 'DM Mono', monospace; -webkit-font-smoothing: antialiased; }
+    button { cursor: pointer; font-family: inherit; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; }
+    input { font-family: inherit; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #080808; }
+    ::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .page-enter { animation: fadeIn 0.3s ease forwards; }
+    #root { min-height: 100vh; display: flex; flex-direction: column; }
+    @media (max-width: 768px) {
+      .hide-mobile { display: none !important; }
+      .grid-2 { grid-template-columns: 1fr !important; }
+      .stats-abs { position: static !important; flex-direction: row !important; flex-wrap: wrap; margin-top: 40px; justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+
+// ============================================================
+// DATOS MAESTROS
+// ============================================================
+
+const SERVICES = [
+  {
+    id: "presencia-digital-qr",
+    icon: "◎",
+    title: "Presencia Digital QR",
+    subtitle: "menuenqr.online",
+    tagline: "Tu negocio, un escaneo.",
+    description:
+      "Landing pages móviles hiperpersonalizadas con QR dinámico. Botones de acción directos a WhatsApp, reservas, carta digital, reseñas y redes. El producto más instalado del portfolio.",
+    color: "#a8ff78",
+    stats: { clients: 25, projects: 30, since: 2023 },
+    what: [
+      "Landing page móvil responsive",
+      "QR personalizado con logo del negocio",
+      "Botones: WhatsApp, Maps, Instagram, Teléfono, Reservas",
+      "Carta / menú digital actualizable sin límite",
+      "Panel de administración propio",
+      "Directorio en menuenqr.online",
+      "Analítica de escaneos y visitas",
+    ],
+    plans: [
+      { name: "Full Stack", price: 199, tag: "Más completo", desc: "Landing + QR + carta digital + panel admin + estadísticas" },
+      { name: "QR + Landing", price: 99, tag: "Más popular", desc: "Landing con todos los botones de acción + QR personalizado" },
+      { name: "Carta Digital", price: 79, tag: "", desc: "Menú/carta actualizable vía panel, sin landing completa" },
+      { name: "Mantenimiento", price: 15, period: "/mes", tag: "", desc: "Actualizaciones ilimitadas, cambios de carta, horarios, fotos" },
+    ],
+    clients: ["el-callejon", "hookalia", "sabore", "el-carbon", "bh-urban", "mamma-mia", "la-salamandra", "quinchuqui", "lovers", "mango-mania", "rincon-latino", "mandolino", "uptown-fusion", "cafe-caribe", "diva", "soleluna", "bar-junior", "no-s3ss", "latinos-fm"],
+  },
+  {
+    id: "diseno-web",
+    icon: "◻",
+    title: "Diseño Web",
+    subtitle: "Sites & E-commerce",
+    tagline: "Presencia que convierte.",
+    description:
+      "Webs corporativas, tiendas online y portales especializados. Desde WordPress y Shopify hasta desarrollos custom en React con integraciones API. 12 proyectos entregados.",
+    color: "#7fffb0",
+    stats: { clients: 12, projects: 14, since: 2021 },
+    what: [
+      "Webs corporativas desde 0",
+      "E-commerce Shopify / WooCommerce",
+      "Portales con API externas (Idealista, etc.)",
+      "Landing pages de conversión",
+      "SEO técnico básico incluido",
+      "Panel de administración (WordPress/CMS)",
+      "Dominio + hosting incluido primer año",
+    ],
+    plans: [
+      { name: "Landing", price: 299, tag: "", desc: "Landing de conversión, hasta 3 secciones, formulario de contacto" },
+      { name: "Corporativa", price: 499, tag: "Más popular", desc: "Web completa, hasta 6 páginas, blog, formularios, SEO básico" },
+      { name: "E-commerce", price: 899, tag: "", desc: "Tienda Shopify o WooCommerce, catálogo, pasarela de pago" },
+      { name: "Premium", price: 1400, tag: "A medida", desc: "Desarrollo custom en React, integraciones API, diseño exclusivo" },
+    ],
+    clients: ["moratti", "distrito-homes", "go2v", "namaste", "velas-angeles", "magic-john", "arias-dental", "restaurante-sabore", "restaurante-el-carbon", "bravos"],
+  },
+  {
+    id: "diseno-grafico",
+    icon: "◆",
+    title: "Diseño Gráfico & Print",
+    subtitle: "Marca & Impresión",
+    tagline: "La marca que no se olvida.",
+    description:
+      "Logotipos, identidad visual completa, flyers, carteles, vinilos, lonas y todo el material imprimible. El servicio más demandado del portfolio con más de 45 clientes.",
+    color: "#ccff99",
+    stats: { clients: 45, projects: 80, since: 2019 },
+    what: [
+      "Logotipos en todos los formatos (AI, PDF, PNG, SVG)",
+      "Manual de identidad visual",
+      "Paleta de colores y tipografías corporativas",
+      "Flyers, carteles y cartelería en A4/A5/otros",
+      "Tarjetas de visita y material corporativo",
+      "Vinilos y lonas para instalación",
+      "Roll-ups y stand de exposición",
+      "Uniformes y merchandising",
+      "Posts y creativos para redes sociales",
+    ],
+    plans: [
+      { name: "Logotipo", price: 149, tag: "", desc: "Logo vectorial profesional en AI, PDF, PNG transparente. 2 propuestas." },
+      { name: "Pack Identidad", price: 299, tag: "Más completo", desc: "Logo + paleta colores + tipografías + manual básico + mockups" },
+      { name: "Flyer / Cartel", price: 49, tag: "", desc: "Diseño A4 o A5, listo para imprenta a 300DPI. 1 revisión incluida." },
+      { name: "Vinilo / Lona", price: 79, tag: "", desc: "Arte final para vinilo o lona, medidas a definir" },
+      { name: "Tarjeta de Visita", price: 39, tag: "", desc: "Diseño doble cara, listo para imprenta, 2 revisiones" },
+      { name: "Roll-up", price: 99, tag: "", desc: "Diseño para roll-up 85x200cm, arte final incluido" },
+    ],
+    clients: ["moratti", "royal-drip", "bravos", "latinos-fm", "stefan-union-jack", "vlachos", "big-ben-bistro", "yo-me-peino-sola", "zasek-tattoo", "barber-samu", "grill-64", "sky-rentals"],
+  },
+  {
+    id: "marketing-digital",
+    icon: "◉",
+    title: "Marketing Digital",
+    subtitle: "Meta Ads & Contenido",
+    tagline: "Anuncios que venden de verdad.",
+    description:
+      "Campañas Meta Ads (Facebook + Instagram), gestión de redes sociales, creación de contenido y copies. Experiencia con nichos España y mercados internacionales.",
+    color: "#e8ff99",
+    stats: { clients: 6, projects: 12, since: 2023 },
+    what: [
+      "Campañas Facebook Ads & Instagram Ads",
+      "Segmentación y targeting avanzado",
+      "Creativos de anuncios (imagen + video + copy)",
+      "Gestión mensual de redes sociales",
+      "Diseño de publicaciones y stories",
+      "Guiones para vídeo y reels",
+      "Informes de resultados mensuales",
+    ],
+    plans: [
+      { name: "Pack Creativos", price: 99, tag: "", desc: "5 creativos para anuncios: diseño + copy. Listos para lanzar." },
+      { name: "Gestión Ads", price: 149, period: "/mes", tag: "Más popular", desc: "Gestión completa de campañas Meta Ads: setup, optimización, informe" },
+      { name: "Gestión RRSS", price: 99, period: "/mes", tag: "", desc: "12 publicaciones/mes en 1 red social + diseño + copies" },
+      { name: "Auditoría", price: 199, tag: "", desc: "Análisis de tu presencia digital + estrategia + roadmap de acción" },
+    ],
+    clients: ["luz-de-costa", "cristina-dermook", "arias-dental", "carlos-levelup", "moratti", "bh-urban"],
+  },
+  {
+    id: "automatizacion-ia",
+    icon: "◈",
+    title: "Automatización & IA",
+    subtitle: "n8n · Agentes · APIs",
+    tagline: "Tu negocio trabaja solo.",
+    description:
+      "Chatbots WhatsApp con IA, agentes automáticos, integraciones entre sistemas y el Studio ERP propio. La vertical con mayor proyección del portfolio Innova and Design.",
+    color: "#a8ff78",
+    stats: { clients: 4, projects: 8, since: 2024 },
+    what: [
+      "Agente WhatsApp con IA (n8n + Whapi + GPT)",
+      "Automatización de respuestas y reservas",
+      "Integración entre sistemas vía API",
+      "Studio ERP: CRM + gestión de pedidos + facturación",
+      "Scraping y captación automatizada de leads",
+      "Notificaciones y alertas automáticas",
+      "Flujos de trabajo sin código (n8n)",
+    ],
+    plans: [
+      { name: "Consultoría IA", price: 149, tag: "", desc: "Auditoría de tu negocio + mapa de automatizaciones posibles" },
+      { name: "Integración API", price: 299, tag: "", desc: "Conexión entre 2 sistemas vía API o n8n. Setup + documentación." },
+      { name: "Agente WhatsApp", price: 599, tag: "Más demandado", desc: "Chatbot IA en WhatsApp con respuestas automáticas e IA conversacional" },
+      { name: "Studio ERP", price: 1500, tag: "Pro", desc: "CRM + gestión pedidos + facturación + portal cliente. Setup completo." },
+    ],
+    clients: ["magic-john", "distrito-homes"],
+  },
+];
+
+const CLIENTS = [
+  // ── CLIENTES ACTIVOS DESTACADOS ──────────────────────────────────────────
+  {
+    id: "moratti",
+    name: "Moratti Seguridad Acuática",
+    sector: "Seguridad",
+    year: 2026,
+    status: "active",
+    highlight: true,
+    badge: "Caso estrella",
+    services: ["diseno-web", "diseno-grafico", "presencia-digital-qr"],
+    description: "Empresa de socorrismo profesional en Costa Blanca. Proyecto integral desde cero: identidad visual, web corporativa, uniformes, dossier comercial y QR.",
+    url: "moratti.group",
+    logo: null,
+    tags: ["Branding completo", "Web", "Print", "Dossier", "QR"],
+    projects: [
+      {
+        id: "moratti-identidad",
+        title: "Identidad Visual Completa",
+        service: "diseno-grafico",
+        problem: "Empresa nueva sin imagen corporativa. Necesitaban transmitir profesionalidad y rigor en un sector de alta responsabilidad.",
+        solution: "Creación de logotipo desde cero con tipografía custom NEW ASTRO, paleta azul eléctrico + naranja rescate, manual de identidad completo con normas de uso, versiones positiva/negativa/monocromática.",
+        result: "Identidad sólida y diferencial que comunica confianza y estándares de élite. Base de toda la comunicación posterior de la marca.",
+        tags: ["Logo", "Manual de Marca", "Colores Corporativos", "Tipografía"],
+        images: [
+          { url: "", alt: "Logo Moratti final" },
+          { url: "", alt: "Web Moratti screenshot" },
+        ],
+      },
+      {
+        id: "moratti-web",
+        title: "Web Corporativa moratti.group",
+        service: "diseno-web",
+        problem: "Sin presencia digital. Los clientes potenciales (hoteles, comunidades, eventos) no podían encontrar información ni contactarlos.",
+        solution: "Diseño y desarrollo de web corporativa en React con diseño editorial, secciones de servicios, comparativa vs competencia, CTA directos a WhatsApp y formulario de presupuesto.",
+        result: "Presencia profesional online que da credibilidad instantánea. Diseño tipo 'luxury service' coherente con el posicionamiento premium de Moratti.",
+        tags: ["React", "Diseño editorial", "B2B", "Lead generation"],
+        images: [
+          { url: "", alt: "Web Moratti desktop" },
+        ],
+      },
+      {
+        id: "moratti-uniformes",
+        title: "Diseño de Uniformes Corporativos",
+        service: "diseno-grafico",
+        problem: "El equipo necesitaba uniformidad visual para transmitir profesionalidad en campo.",
+        solution: "Diseño de camiseta frontal y trasera en Photoshop con mockup realista. Arte final listo para serigrafía/bordado.",
+        result: "Uniformes que refuerzan la identidad Moratti y diferencian visualmente al equipo en cada instalación.",
+        tags: ["PSD", "Mockup", "Serigrafía", "Uniformes"],
+        images: [
+          { url: "", alt: "Camiseta frontal Moratti" },
+          { url: "", alt: "Camiseta trasera Moratti" },
+        ],
+      },
+      {
+        id: "moratti-dossier",
+        title: "Dossier Corporativo 2026",
+        service: "diseno-grafico",
+        problem: "Necesitaban material de ventas profesional para presentar a hoteles, comunidades y eventos.",
+        solution: "Dossier de presentación de 6 páginas en PDF premium, con diseño editorial, diferenciales vs competencia, metodología Moratti y CTA claro.",
+        result: "Material de ventas que abre puertas en reuniones B2B y da credibilidad inmediata.",
+        tags: ["PDF", "Presentación B2B", "Editorial", "Ventas"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "distrito-homes",
+    name: "Distrito Homes",
+    sector: "Inmobiliaria",
+    year: 2026,
+    status: "active",
+    highlight: true,
+    badge: "Desarrollo complejo",
+    services: ["diseno-web", "diseno-grafico", "automatizacion-ia"],
+    description: "Portal inmobiliario premium en Benidorm con integración en tiempo real con API de Idealista. Sistema de diseño 'The Editorial Estate'.",
+    url: "distritohomes.es",
+    logo: null,
+    tags: ["React", "API Idealista", "Glassmorphism", "Tarjeta NFC"],
+    projects: [
+      {
+        id: "distrito-portal",
+        title: "Portal Inmobiliario Premium",
+        service: "diseno-web",
+        problem: "Agencia inmobiliaria nueva sin presencia digital que necesitaba posicionarse como referente premium en Benidorm.",
+        solution: "Desarrollo de portal React con sistema de diseño 'The Editorial Estate': navy profundo + dorado, tipografía Noto Serif, glassmorphism, integración directa con API de Idealista para propiedades en tiempo real.",
+        result: "Portal de lujo que diferencia completamente a Distrito Homes del mercado local. Feed de propiedades actualizado automáticamente desde Idealista.",
+        tags: ["React", "API Idealista", "Glassmorphism", "Navy + Oro", "Luxury"],
+        images: [],
+      },
+      {
+        id: "distrito-tarjeta",
+        title: "Tarjeta de Visita Corporativa",
+        service: "diseno-grafico",
+        problem: "Necesitaban material físico coherente con el posicionamiento premium de la marca.",
+        solution: "Diseño de tarjeta doble cara con identidad corporativa Distrito Homes. Arte final para imprenta.",
+        result: "Tarjeta que refleja el nivel premium de la agencia en cada interacción comercial.",
+        tags: ["Print", "Tarjeta", "Branding"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "magic-john",
+    name: "Espectáculos Magic John",
+    sector: "Eventos",
+    year: 2024,
+    status: "active",
+    highlight: true,
+    badge: "Automatización IA",
+    services: ["diseno-web", "automatizacion-ia", "presencia-digital-qr"],
+    description: "Empresa de castillos hinchables y espectáculos en Benidorm. 3 automatizaciones activas con IA en WhatsApp.",
+    url: "espectaculosmagicjohn.es",
+    logo: null,
+    tags: ["Chatbot WhatsApp", "Agente IA", "n8n", "Web"],
+    projects: [
+      {
+        id: "magic-john-chatbot",
+        title: "Agente IA en WhatsApp",
+        service: "automatizacion-ia",
+        problem: "El equipo gestionaba manualmente decenas de consultas de reservas al día. Tiempo perdido respondiendo las mismas preguntas.",
+        solution: "Desarrollo de agente conversacional en WhatsApp con n8n + Whapi.cloud + GPT. El bot responde consultas, filtra por fecha/tipo, cualifica leads y agenda reservas automáticamente.",
+        result: "Reducción del 70% del tiempo de gestión de consultas. Respuestas instantáneas 24h. Leads mejor cualificados.",
+        tags: ["n8n", "WhatsApp", "GPT", "Automatización", "Chatbot"],
+        images: [],
+      },
+      {
+        id: "magic-john-web",
+        title: "Web Corporativa",
+        service: "diseno-web",
+        problem: "Necesitaban presencia online profesional para atraer clientes de eventos y particulares.",
+        solution: "Web corporativa en WordPress con catálogo de servicios, galería, formulario de reservas y SEO local.",
+        result: "Posicionamiento online que genera leads orgánicos de forma continua.",
+        tags: ["WordPress", "SEO local", "Reservas online"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "royal-drip",
+    name: "Royal Drip Jewelry",
+    sector: "Joyería / Moda",
+    year: 2022,
+    status: "historical",
+    highlight: true,
+    badge: "Branding icónico",
+    services: ["diseno-grafico"],
+    description: "Marca de joyería streetwear en Benidorm. Branding completo desde cero con identidad premium en negro y dorado.",
+    url: null,
+    logo: null,
+    tags: ["Logo premium", "Dorado", "Streetwear", "Shopify", "Identidad completa"],
+    projects: [
+      {
+        id: "royal-drip-logo",
+        title: "Identidad Visual Royal Drip",
+        service: "diseno-grafico",
+        problem: "Marca de joyería emergente que necesitaba una identidad que comunicara exclusividad y estilo streetwear al mismo tiempo.",
+        solution: "Logotipo en caligrafía Abril Display con degradado dorado (#916739 → #f8e69d), versión diamante en negro y versión texto. Manual de marca con paleta completa y tipografía auxiliar High Tilde. Archivos en AI, PSD y PDF.",
+        result: "Identidad reconocible e icónica. La marca consiguió abrir su tienda Shopify y establecer presencia en redes con una imagen coherente y premium.",
+        tags: ["Logo dorado", "AI", "PSD", "Manual de marca", "Shopify"],
+        images: [
+          { url: "", alt: "Presentación logo Royal Drip con colores y tipografías" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "bravos",
+    name: "Bravos Construcción",
+    sector: "Construcción",
+    year: 2026,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["diseno-grafico"],
+    description: "Empresa de construcción y reformas. Logotipo profesional con múltiples versiones para uso digital y físico.",
+    url: null,
+    logo: null,
+    tags: ["Logo", "Construcción", "PNG", "PSD"],
+    projects: [
+      {
+        id: "bravos-logo",
+        title: "Logotipo Bravos Construcción",
+        service: "diseno-grafico",
+        problem: "Empresa de construcción sin imagen corporativa propia que quería diferenciarse y transmitir solidez.",
+        solution: "Diseño de logotipo en Photoshop con tipografía bold y símbolo geométrico. Entrega en PSD, PNG con fondo y sin fondo.",
+        result: "Logo profesional listo para usar en vehículos, uniformes, documentación y web.",
+        tags: ["Logo", "PSD", "PNG transparente", "Construcción"],
+        images: [
+          { url: "", alt: "Logo Bravos Construcción con fondo" },
+          { url: "", alt: "Logo Bravos sin fondo" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "latinos-fm",
+    name: "Latinos FM Levante",
+    sector: "Radio / Medios",
+    year: 2022,
+    status: "historical",
+    highlight: false,
+    badge: "",
+    services: ["diseno-grafico"],
+    description: "Emisora de radio latina online. Roll-up y material gráfico de presentación.",
+    url: null,
+    logo: null,
+    tags: ["Roll-up", "Radio", "Flyer", "Print"],
+    projects: [
+      {
+        id: "latinos-rollup",
+        title: "Roll-up Corporativo",
+        service: "diseno-grafico",
+        problem: "La emisora necesitaba material físico para eventos y presentaciones.",
+        solution: "Diseño de roll-up 85x200cm con identidad de marca, programa de shows y datos de contacto.",
+        result: "Material de exposición profesional para presencia en eventos y ferias.",
+        tags: ["Roll-up", "Print", "Eventos"],
+        images: [
+          { url: "", alt: "Roll-up Latinos FM Levante" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "el-callejon",
+    name: "El Callejón",
+    sector: "Restauración",
+    year: 2024,
+    status: "active",
+    highlight: true,
+    badge: "Full stack digital",
+    services: ["presencia-digital-qr", "diseno-grafico"],
+    description: "Bar-restaurante de referencia en Benidorm. Proyecto full stack en menuenqr: landing completa + carta digital + QR + redes.",
+    url: "menuenqr.online/restaurante-el-callejon/",
+    logo: null,
+    tags: ["Landing", "Carta digital", "QR", "WhatsApp", "Full stack"],
+    projects: [
+      {
+        id: "callejon-landing",
+        title: "Landing + Carta Digital + QR",
+        service: "presencia-digital-qr",
+        problem: "Local sin presencia digital organizada. Clientes no podían ver la carta ni reservar online.",
+        solution: "Landing page en menuenqr.online con carta digital actualizable, botones de WhatsApp y reservas, QR personalizado para mesas y fachada.",
+        result: "Presencia digital completa. La carta se actualiza fácilmente desde el panel sin necesidad de reimprimir físicamente.",
+        tags: ["Landing", "QR", "Carta digital", "Panel admin"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "hookalia",
+    name: "Hookalia",
+    sector: "Restauración / Hookah",
+    year: 2025,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["presencia-digital-qr"],
+    description: "Bar de cachimba en Benidorm. Landing digital con carta de cachimbas y sabores, QR para mesas.",
+    url: null,
+    logo: null,
+    tags: ["Landing", "Carta digital", "QR", "Hookah"],
+    projects: [
+      {
+        id: "hookalia-landing",
+        title: "Landing + Carta de Cachimbas",
+        service: "presencia-digital-qr",
+        problem: "Negocio nuevo que necesitaba presencia digital y carta digital para mesas.",
+        solution: "Landing en menuenqr.online con carta de cachimbas y sabores, QR para mesas y mostrador.",
+        result: "Carta siempre actualizada, experiencia digital para los clientes en local.",
+        tags: ["Landing", "Carta", "QR"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "bh-urban",
+    name: "BH Urban",
+    sector: "Moda / Retail",
+    year: 2023,
+    status: "historical",
+    highlight: false,
+    badge: "",
+    services: ["diseno-web", "presencia-digital-qr"],
+    description: "Tienda de ropa urbana en Benidorm. E-commerce Shopify + landing digital.",
+    url: null,
+    logo: null,
+    tags: ["Shopify", "E-commerce", "Moda", "Landing"],
+    projects: [
+      {
+        id: "bh-urban-shopify",
+        title: "Tienda E-commerce Shopify",
+        service: "diseno-web",
+        problem: "Tienda física sin canal de venta online.",
+        solution: "Configuración y personalización de tienda Shopify con catálogo completo, pasarela de pago y gestión de stock.",
+        result: "Canal de venta online activo con catálogo de productos completo.",
+        tags: ["Shopify", "E-commerce", "Catálogo"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "namaste",
+    name: "Namaste Centro Holístico",
+    sector: "Bienestar",
+    year: 2024,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["diseno-web"],
+    description: "Centro de yoga, meditación y terapias holísticas. Web WooCommerce para reservas y productos.",
+    url: null,
+    logo: null,
+    tags: ["WooCommerce", "Bienestar", "Reservas online"],
+    projects: [
+      {
+        id: "namaste-web",
+        title: "Web con WooCommerce",
+        service: "diseno-web",
+        problem: "Centro sin presencia online ni sistema de reservas o venta de productos.",
+        solution: "WordPress + WooCommerce con catálogo de servicios, reservas de clases y tienda de productos.",
+        result: "Web que permite reservar clases y comprar productos directamente online.",
+        tags: ["WooCommerce", "WordPress", "Reservas"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "go2v",
+    name: "Go2V Contractors",
+    sector: "Construcción",
+    year: 2025,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["diseno-web"],
+    description: "Empresa de contratación de obra en zona anglófona de Benidorm. Web corporativa en inglés.",
+    url: null,
+    logo: null,
+    tags: ["Web", "Inglés", "B2B", "Construcción"],
+    projects: [
+      {
+        id: "go2v-web",
+        title: "Web Corporativa en Inglés",
+        service: "diseno-web",
+        problem: "Empresa sin presencia online para el mercado anglófono de la zona.",
+        solution: "Web corporativa en inglés con servicios, portfolio de obras y formulario de contacto.",
+        result: "Presencia digital para captar clientes angloparlantes en Costa Blanca.",
+        tags: ["Web", "Inglés", "Portfolio"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "luz-de-costa",
+    name: "Luz de Costa",
+    sector: "Inmobiliaria",
+    year: 2024,
+    status: "historical",
+    highlight: false,
+    badge: "",
+    services: ["marketing-digital"],
+    description: "Agencia inmobiliaria con campañas para mercados de Polonia y España. Meta Ads internacionales.",
+    url: null,
+    logo: null,
+    tags: ["Meta Ads", "Polonia", "España", "Inmobiliaria", "Campañas"],
+    projects: [
+      {
+        id: "luz-costa-ads",
+        title: "Campañas Meta Ads Internacionales",
+        service: "marketing-digital",
+        problem: "Agencia inmobiliaria que quería captar compradores tanto en España como en el mercado polaco.",
+        solution: "Campañas Meta Ads segmentadas por país e idioma, creativos adaptados culturalmente, copies en español y polaco, optimización mensual de audiencias.",
+        result: "Campañas activas en dos mercados simultáneamente con leads cualificados.",
+        tags: ["Facebook Ads", "Instagram Ads", "Multiidoma", "Lead Gen"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "cristina-dermook",
+    name: "Cristina / Dermook",
+    sector: "Estética",
+    year: 2026,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["marketing-digital", "diseno-grafico"],
+    description: "Profesional de estética y tratamientos faciales. Gestión de redes sociales y creativos para anuncios.",
+    url: null,
+    logo: null,
+    tags: ["Instagram Ads", "Creativos", "Estética", "RRSS"],
+    projects: [
+      {
+        id: "dermook-ads",
+        title: "Gestión Meta Ads & RRSS",
+        service: "marketing-digital",
+        problem: "Profesional de estética sin presencia organizada en redes ni campañas de captación.",
+        solution: "Gestión de Instagram + campañas Meta Ads con creativos de tratamientos, copies emocionales y segmentación local.",
+        result: "Aumento de consultas entrantes y mayor visibilidad local en el sector.",
+        tags: ["Instagram", "Meta Ads", "Creativos", "Local"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "arias-dental",
+    name: "Clínica Arias Dental",
+    sector: "Salud",
+    year: 2025,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["diseno-web", "marketing-digital"],
+    description: "Clínica dental en Benidorm. Web corporativa y campañas Meta Ads para captación de nuevos pacientes.",
+    url: "clinicaariasdental.es",
+    logo: null,
+    tags: ["Web", "Meta Ads", "Clínica", "Salud"],
+    projects: [
+      {
+        id: "arias-web",
+        title: "Web Corporativa Clínica",
+        service: "diseno-web",
+        problem: "Clínica sin web propia, perdiendo visibilidad frente a competidores.",
+        solution: "Web corporativa con servicios, equipo, preguntas frecuentes y formulario de cita online.",
+        result: "Presencia digital profesional que genera peticiones de cita de forma continua.",
+        tags: ["Web", "Cita online", "Clínica dental"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "stefan-union-jack",
+    name: "Stefan / Union Jack",
+    sector: "Hostelería",
+    year: 2024,
+    status: "historical",
+    highlight: false,
+    badge: "",
+    services: ["diseno-grafico"],
+    description: "Bar británico en Benidorm. Vinilos decorativos y material gráfico para instalación.",
+    url: null,
+    logo: null,
+    tags: ["Vinilos", "Decoración", "Print", "Bar"],
+    projects: [
+      {
+        id: "stefan-vinilos",
+        title: "Vinilos Decorativos para Local",
+        service: "diseno-grafico",
+        problem: "Bar necesitaba decorar el local con elementos gráficos propios de la temática británica.",
+        solution: "Diseño de vinilos decorativos a medida para paredes y ventanas del local, arte final para instalación por imprenta.",
+        result: "Decoración personalizada que refuerza la identidad visual del local.",
+        tags: ["Vinilos", "Decoración local", "Arte final"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "vlachos",
+    name: "Vlachos",
+    sector: "Restauración",
+    year: 2024,
+    status: "historical",
+    highlight: false,
+    badge: "",
+    services: ["diseno-grafico"],
+    description: "Restaurante griego. Lona de fachada diseñada e impresa.",
+    url: null,
+    logo: null,
+    tags: ["Lona", "Fachada", "Print", "Restaurante"],
+    projects: [
+      {
+        id: "vlachos-lona",
+        title: "Lona de Fachada",
+        service: "diseno-grafico",
+        problem: "Restaurante necesitaba visibilidad en la calle con la identidad del local.",
+        solution: "Diseño de lona de fachada con nombre del restaurante, especialidad y horario. Arte final a medida para imprenta.",
+        result: "Visibilidad aumentada en la calle, el local se identifica fácilmente desde lejos.",
+        tags: ["Lona", "Fachada", "Gran formato", "Restaurante griego"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "big-ben-bistro",
+    name: "Big Ben Bistro",
+    sector: "Restauración",
+    year: 2024,
+    status: "historical",
+    highlight: false,
+    badge: "",
+    services: ["diseno-grafico"],
+    description: "Bistro de cocina fusión. Cartas físicas diseñadas e impresas con encuadernación premium.",
+    url: null,
+    logo: null,
+    tags: ["Carta física", "Print", "Menú", "Bistro"],
+    projects: [
+      {
+        id: "big-ben-cartas",
+        title: "Diseño de Cartas Físicas",
+        service: "diseno-grafico",
+        problem: "Necesitaban cartas de menú a la altura del nivel del establecimiento.",
+        solution: "Diseño de cartas A5 con layout editorial, fotografías de platos, tipografía elegante. Arte final para imprenta con encuadernación espiral.",
+        result: "Cartas que comunican calidad y profesionalidad en cada mesa.",
+        tags: ["Carta menú", "A5", "Editorial", "Encuadernación"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "mango-mania",
+    name: "Mango Mania",
+    sector: "Restauración",
+    year: 2025,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["presencia-digital-qr"],
+    description: "Heladería tropical. Landing digital con carta de helados y sabores especiales.",
+    url: null,
+    logo: null,
+    tags: ["Landing", "QR", "Heladería"],
+    projects: [
+      {
+        id: "mango-landing",
+        title: "Landing Digital + QR",
+        service: "presencia-digital-qr",
+        problem: "Heladería sin presencia online ni forma de mostrar sus sabores especiales del día.",
+        solution: "Landing en menuenqr.online con carta de sabores actualizable, botones de acción y QR.",
+        result: "Los clientes pueden ver los sabores del día antes de llegar al local.",
+        tags: ["Landing", "QR", "Carta actualizable"],
+        images: [],
+      },
+    ],
+  },
+  {
+    id: "la-salamandra",
+    name: "La Salamandra",
+    sector: "Restauración",
+    year: 2025,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["presencia-digital-qr"],
+    description: "Restaurante. Landing + carta digital en menuenqr.online.",
+    url: null,
+    logo: null,
+    tags: ["Landing", "Carta digital", "QR"],
+    projects: [],
+  },
+  {
+    id: "quinchuqui",
+    name: "Quinchuqui",
+    sector: "Restauración",
+    year: 2024,
+    status: "historical",
+    highlight: false,
+    badge: "",
+    services: ["presencia-digital-qr"],
+    description: "Restaurante de comida ecuatoriana. Landing digital + QR.",
+    url: null,
+    logo: null,
+    tags: ["Landing", "QR", "Ecuatoriano"],
+    projects: [],
+  },
+  {
+    id: "sofia-lopardo",
+    name: "Sofía Lopardo",
+    sector: "Profesional",
+    year: 2026,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["presencia-digital-qr"],
+    description: "Profesional. Landing digital de presentación personal.",
+    url: null,
+    logo: null,
+    tags: ["Landing personal", "QR"],
+    projects: [],
+  },
+  {
+    id: "mamma-mia",
+    name: "Mamma Mia",
+    sector: "Restauración",
+    year: 2025,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["presencia-digital-qr"],
+    description: "Restaurante italiano. Landing + carta digital.",
+    url: null,
+    logo: null,
+    tags: ["Landing", "Italiana", "QR"],
+    projects: [],
+  },
+  {
+    id: "lovers",
+    name: "Lovers",
+    sector: "Comercio",
+    year: 2025,
+    status: "active",
+    highlight: false,
+    badge: "",
+    services: ["presencia-digital-qr"],
+    description: "Tienda. Landing digital con información del negocio y QR.",
+    url: null,
+    logo: null,
+    tags: ["Landing", "QR"],
+    projects: [],
+  },
+  {
+    id: "rincon-latino",
+    name: "Rincón Latino",
+    sector: "Restauración",
+    year: 2024,
+    status: "historical",
+    highlight: false,
+    badge: "",
+    services: ["presencia-digital-qr"],
+    description: "Restaurante latino. QR + carta digital en menuenqr.online.",
+    url: null,
+    logo: null,
+    tags: ["QR", "Carta digital", "Latino"],
+    projects: [],
+  },
+  {
+    id: "mandolino",
+    name: "Mandolino",
+    sector: "Restauración",
+    year: 2024,
+    status: "historical",
+    highlight: false,
+    badge: "",
+    services: ["presencia-digital-qr"],
+    description: "Restaurante italiano. QR + carta.",
+    url: null,
+    logo: null,
+    tags: ["QR", "Italiana"],
+    projects: [],
+  },
+  {
+    id: "uptown-fusion",
+    name: "Uptown Fusion",
+    sector: "Restauración",
+    year: 2024,
+    status: "historical",
+    highlight: false,
+    badge: "",
+    services: ["presencia-digital-qr"],
+    description: "Restaurante fusión en Calpe. QR + landing.",
+    url: null,
+    logo: null,
+    tags: ["QR", "Fusión", "Calpe"],
+    projects: [],
+  },
+];
+
+// ============================================================
+// UTILIDADES
+// ============================================================
+
+const getService = (id) => SERVICES.find((s) => s.id === id);
+const getClient = (id) => CLIENTS.find((c) => c.id === id);
+const getProject = (clientId, projectId) => {
+  const c = getClient(clientId);
+  return c?.projects?.find((p) => p.id === projectId);
+};
+
+const SERVICE_ICONS = {
+  "presencia-digital-qr": "◎",
+  "diseno-web": "◻",
+  "diseno-grafico": "◆",
+  "marketing-digital": "◉",
+  "automatizacion-ia": "◈",
+};
+
+
+// ============================================================
+// COMPONENTES UI REUTILIZABLES
+// ============================================================
+
+const Tag = ({ children, color }) => (
+  <span
+    style={{
+      display: "inline-block",
+      padding: "2px 10px",
+      borderRadius: "2px",
+      fontSize: "0.65rem",
+      fontFamily: "'DM Mono', monospace",
+      letterSpacing: "0.08em",
+      textTransform: "uppercase",
+      background: color ? `${color}18` : "#a8ff7818",
+      color: color || "#a8ff78",
+      border: `1px solid ${color ? `${color}40` : "#a8ff7840"}`,
+    }}
+  >
+    {children}
+  </span>
+);
+
+const Breadcrumb = ({ items, navigate }) => (
+  <nav style={{ display: "flex", gap: "6px", alignItems: "center", marginBottom: "32px" }}>
+    {items.map((item, i) => (
+      <span key={i} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        {i < items.length - 1 ? (
+          <>
+            <button
+              onClick={() => navigate(item.page, item.id)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#666",
+                cursor: "pointer",
+                fontFamily: "'DM Mono', monospace",
+                fontSize: "0.7rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                padding: 0,
+              }}
+            >
+              {item.label}
+            </button>
+            <span style={{ color: "#333", fontSize: "0.7rem" }}>›</span>
+          </>
+        ) : (
+          <span
+            style={{
+              color: "#a8ff78",
+              fontFamily: "'DM Mono', monospace",
+              fontSize: "0.7rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+            }}
+          >
+            {item.label}
+          </span>
+        )}
+      </span>
+    ))}
+  </nav>
+);
+
+const SectionTitle = ({ label, title, accent }) => (
+  <div style={{ marginBottom: "48px" }}>
+    <div
+      style={{
+        fontFamily: "'DM Mono', monospace",
+        fontSize: "0.65rem",
+        color: "#a8ff78",
+        letterSpacing: "0.2em",
+        textTransform: "uppercase",
+        marginBottom: "12px",
+      }}
+    >
+      {label}
+    </div>
+    <h2
+      style={{
+        fontFamily: "'Syne', sans-serif",
+        fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+        fontWeight: 800,
+        color: "#fff",
+        margin: 0,
+        lineHeight: 1.05,
+      }}
+    >
+      {title}
+      {accent && <span style={{ color: "#a8ff78" }}> {accent}</span>}
+    </h2>
+  </div>
+);
+
+// ============================================================
+// NAV
+// ============================================================
+
+const Nav = ({ currentPage, navigate }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const links = [
+    { label: "Inicio", page: "home" },
+    { label: "Servicios", page: "servicios" },
+    { label: "Clientes", page: "clientes" },
+    { label: "Portfolio", page: "portfolio" },
+    { label: "Contacto", page: "contacto" },
+  ];
+
+  return (
+    <nav
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        padding: "0 clamp(16px, 4vw, 64px)",
+        height: "64px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        background: "rgba(8,8,8,0.92)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid #1a1a1a",
+      }}
+    >
+      <button
+        onClick={() => navigate("home")}
+        style={{
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          padding: 0,
+        }}
+      >
+        <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "1rem", color: "#fff", letterSpacing: "-0.02em" }}>
+          INNOVA AND DESIGN
+        </span>
+        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.55rem", color: "#a8ff78", letterSpacing: "0.15em", textTransform: "uppercase" }}>
+          Motor Antigravity v.2026
+        </span>
+      </button>
+
+      <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+        {links.map((l) => (
+          <button
+            key={l.page}
+            onClick={() => { navigate(l.page); setMenuOpen(false); }}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "'DM Mono', monospace",
+              fontSize: "0.65rem",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: currentPage === l.page ? "#a8ff78" : "#888",
+              padding: "6px 12px",
+              borderRadius: "2px",
+              transition: "color 0.2s",
+            }}
+          >
+            {l.label}
+          </button>
+        ))}
+        <a
+          href="https://wa.me/34642618746"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: "'DM Mono', monospace",
+            fontSize: "0.65rem",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "#080808",
+            background: "#a8ff78",
+            padding: "7px 16px",
+            borderRadius: "2px",
+            textDecoration: "none",
+            fontWeight: 600,
+            marginLeft: "8px",
+          }}
+        >
+          WhatsApp
+        </a>
+      </div>
+    </nav>
+  );
+};
+
+// ============================================================
+// HOME
+// ============================================================
+
+const Home = ({ navigate }) => {
+  const stats = [
+    { n: "40+", label: "Clientes activos" },
+    { n: "90+", label: "Proyectos entregados" },
+    { n: "5", label: "Verticales de servicio" },
+    { n: "2019", label: "Desde" },
+  ];
+
+  const ticker = [
+    "Moratti", "Distrito Homes", "Magic John", "Royal Drip", "BH Urban",
+    "El Callejón", "Hookalia", "Bravos", "Latinos FM", "Namaste",
+    "Go2V", "Arias Dental", "Quinchuqui", "La Salamandra", "Mango Mania",
+    "Big Ben Bistro", "Vlachos", "Luz de Costa", "Mamma Mia", "Lovers",
+  ];
+
+  return (
+    <div>
+      {/* HERO */}
+      <section
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: "120px clamp(16px, 6vw, 80px) 80px",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Grid bg */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `
+              linear-gradient(rgba(168,255,120,0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(168,255,120,0.04) 1px, transparent 1px)
+            `,
+            backgroundSize: "60px 60px",
+            pointerEvents: "none",
+          }}
+        />
+        {/* Glow */}
+        <div
+          style={{
+            position: "absolute",
+            top: "20%",
+            right: "-10%",
+            width: "600px",
+            height: "600px",
+            borderRadius: "50%",
+            background: "radial-gradient(ellipse, rgba(168,255,120,0.06) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }}
+        />
+
+        <div style={{ position: "relative", maxWidth: "900px" }}>
+          <div
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: "0.7rem",
+              color: "#a8ff78",
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              marginBottom: "24px",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            <span style={{ display: "inline-block", width: "32px", height: "1px", background: "#a8ff78" }} />
+            Benidorm · Costa Blanca · España
+          </div>
+
+          <h1
+            style={{
+              fontFamily: "'Syne', sans-serif",
+              fontWeight: 800,
+              fontSize: "clamp(2.8rem, 8vw, 6rem)",
+              lineHeight: 0.95,
+              margin: "0 0 32px",
+              color: "#fff",
+              letterSpacing: "-0.03em",
+            }}
+          >
+            Diseño.
+            <br />
+            <span style={{ color: "#a8ff78" }}>Código.</span>
+            <br />
+            Automatización.
+          </h1>
+
+          <p
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: "clamp(0.85rem, 1.5vw, 1rem)",
+              color: "#666",
+              maxWidth: "520px",
+              lineHeight: 1.7,
+              marginBottom: "48px",
+            }}
+          >
+            Agencia digital en Benidorm especializada en presencia digital QR, diseño web, diseño gráfico, marketing y automatización con IA. Más de 40 clientes en Costa Blanca.
+          </p>
+
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+            <button
+              onClick={() => navigate("servicios")}
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: "0.75rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "#080808",
+                background: "#a8ff78",
+                border: "none",
+                padding: "14px 28px",
+                borderRadius: "2px",
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+            >
+              Ver Servicios
+            </button>
+            <button
+              onClick={() => navigate("portfolio")}
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: "0.75rem",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "#fff",
+                background: "none",
+                border: "1px solid #333",
+                padding: "14px 28px",
+                borderRadius: "2px",
+                cursor: "pointer",
+              }}
+            >
+              Ver Portfolio
+            </button>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div
+          style={{
+            position: "absolute",
+            right: "clamp(16px, 6vw, 80px)",
+            bottom: "80px",
+            display: "flex",
+            gap: "40px",
+          }}
+        >
+          {stats.map((s) => (
+            <div key={s.label} style={{ textAlign: "right" }}>
+              <div
+                style={{
+                  fontFamily: "'Syne', sans-serif",
+                  fontWeight: 800,
+                  fontSize: "2.2rem",
+                  color: "#a8ff78",
+                  lineHeight: 1,
+                }}
+              >
+                {s.n}
+              </div>
+              <div
+                style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: "0.6rem",
+                  color: "#555",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  marginTop: "4px",
+                }}
+              >
+                {s.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* TICKER */}
+      <div
+        style={{
+          borderTop: "1px solid #1a1a1a",
+          borderBottom: "1px solid #1a1a1a",
+          padding: "14px 0",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+        }}
+      >
+        <div
+          style={{
+            display: "inline-flex",
+            gap: "0",
+            animation: "ticker 40s linear infinite",
+          }}
+        >
+          {[...ticker, ...ticker].map((name, i) => (
+            <span
+              key={i}
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: "0.65rem",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: i % 2 === 0 ? "#555" : "#a8ff7880",
+                padding: "0 24px",
+              }}
+            >
+              {name} ·
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* SERVICIOS PREVIEW */}
+      <section style={{ padding: "100px clamp(16px, 6vw, 80px)" }}>
+        <SectionTitle label="— Lo que hacemos" title="Cinco verticales," accent="un mismo objetivo." />
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gap: "1px",
+            background: "#1a1a1a",
+            border: "1px solid #1a1a1a",
+          }}
+        >
+          {SERVICES.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => navigate("servicio", s.id)}
+              style={{
+                background: "#080808",
+                border: "none",
+                padding: "40px 32px",
+                textAlign: "left",
+                cursor: "pointer",
+                transition: "background 0.2s",
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#0f0f0f")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#080808")}
+            >
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "1.4rem", color: s.color }}>{s.icon}</div>
+              <div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#fff", marginBottom: "6px" }}>
+                  {s.title}
+                </div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#555", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  {s.subtitle}
+                </div>
+              </div>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.72rem", color: "#666", lineHeight: 1.6, margin: 0 }}>
+                {s.tagline}
+              </p>
+              <div style={{ display: "flex", gap: "12px", marginTop: "auto" }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: s.color }}>
+                  {s.stats.clients} clientes
+                </span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#444" }}>→</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* CLIENTES DESTACADOS */}
+      <section style={{ padding: "0 clamp(16px, 6vw, 80px) 100px" }}>
+        <SectionTitle label="— Casos de éxito" title="Proyectos que" accent="marcan la diferencia." />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "16px" }}>
+          {CLIENTS.filter((c) => c.highlight).map((c) => (
+            <button
+              key={c.id}
+              onClick={() => navigate("cliente", c.id)}
+              style={{
+                background: "#0a0a0a",
+                border: "1px solid #1a1a1a",
+                borderRadius: "4px",
+                padding: "28px",
+                textAlign: "left",
+                cursor: "pointer",
+                transition: "border-color 0.2s, background 0.2s",
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#a8ff7840";
+                e.currentTarget.style.background = "#0d0d0d";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#1a1a1a";
+                e.currentTarget.style.background = "#0a0a0a";
+              }}
+            >
+              {c.badge && (
+                <Tag>{c.badge}</Tag>
+              )}
+              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: "1.15rem", color: "#fff" }}>
+                {c.name}
+              </div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#555", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                {c.sector} · {c.year}
+              </div>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.72rem", color: "#666", lineHeight: 1.6, margin: 0 }}>
+                {c.description}
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "8px" }}>
+                {c.tags.slice(0, 4).map((t) => <Tag key={t}>{t}</Tag>)}
+              </div>
+            </button>
+          ))}
+        </div>
+        <div style={{ textAlign: "center", marginTop: "40px" }}>
+          <button
+            onClick={() => navigate("clientes")}
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: "0.72rem",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "#a8ff78",
+              background: "none",
+              border: "1px solid #a8ff7840",
+              padding: "12px 28px",
+              borderRadius: "2px",
+              cursor: "pointer",
+            }}
+          >
+            Ver todos los clientes →
+          </button>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section
+        style={{
+          padding: "80px clamp(16px, 6vw, 80px)",
+          borderTop: "1px solid #1a1a1a",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "32px",
+        }}
+      >
+        <div>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#a8ff78", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "12px" }}>
+            — ¿Empezamos?
+          </div>
+          <h2 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#fff", margin: 0, lineHeight: 1.1 }}>
+            Tu proyecto,<br />nuestro siguiente<span style={{ color: "#a8ff78" }}> caso de éxito.</span>
+          </h2>
+        </div>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <a
+            href="https://wa.me/34642618746?text=Hola%20Javier%2C%20me%20interesa%20hablar%20de%20mi%20proyecto"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: "0.75rem",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "#080808",
+              background: "#a8ff78",
+              padding: "14px 28px",
+              borderRadius: "2px",
+              textDecoration: "none",
+              fontWeight: 600,
+            }}
+          >
+            WhatsApp directo
+          </a>
+          <button
+            onClick={() => navigate("contacto")}
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: "0.75rem",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "#fff",
+              background: "none",
+              border: "1px solid #333",
+              padding: "14px 28px",
+              borderRadius: "2px",
+              cursor: "pointer",
+            }}
+          >
+            Ver servicios y precios
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+
+// ============================================================
+// PÁGINA SERVICIOS (LISTADO)
+// ============================================================
+
+const ServiciosPage = ({ navigate }) => (
+  <div style={{ padding: "120px clamp(16px, 6vw, 80px) 80px" }}>
+    <Breadcrumb items={[{ label: "Inicio", page: "home" }, { label: "Servicios" }]} navigate={navigate} />
+    <SectionTitle label="— Servicios" title="Todo lo que necesita" accent="tu negocio." />
+    <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "#1a1a1a", border: "1px solid #1a1a1a" }}>
+      {SERVICES.map((s) => (
+        <button
+          key={s.id}
+          onClick={() => navigate("servicio", s.id)}
+          style={{
+            background: "#080808",
+            border: "none",
+            padding: "40px 48px",
+            textAlign: "left",
+            cursor: "pointer",
+            display: "grid",
+            gridTemplateColumns: "80px 1fr auto",
+            gap: "32px",
+            alignItems: "center",
+            transition: "background 0.2s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#0d0d0d")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "#080808")}
+        >
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "2rem", color: s.color }}>{s.icon}</div>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "8px" }}>
+              <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: "1.3rem", color: "#fff" }}>{s.title}</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#555", letterSpacing: "0.1em", textTransform: "uppercase" }}>{s.subtitle}</span>
+            </div>
+            <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.75rem", color: "#666", lineHeight: 1.6, margin: 0, maxWidth: "560px" }}>{s.description}</p>
+          </div>
+          <div style={{ textAlign: "right", minWidth: "120px" }}>
+            <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: "1.6rem", color: s.color }}>
+              {s.stats.clients}
+            </div>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#555", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              clientes
+            </div>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", color: "#a8ff78", marginTop: "12px" }}>Ver precios →</div>
+          </div>
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+// ============================================================
+// PÁGINA DE SERVICIO INDIVIDUAL
+// ============================================================
+
+const ServicioPage = ({ id, navigate }) => {
+  const s = getService(id);
+  if (!s) return null;
+
+  const clientsInService = CLIENTS.filter((c) => c.services.includes(s.id));
+
+  return (
+    <div style={{ padding: "120px clamp(16px, 6vw, 80px) 80px" }}>
+      <Breadcrumb
+        items={[
+          { label: "Inicio", page: "home" },
+          { label: "Servicios", page: "servicios" },
+          { label: s.title },
+        ]}
+        navigate={navigate}
+      />
+
+      {/* Hero del servicio */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "40px", alignItems: "start", marginBottom: "80px" }}>
+        <div>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "2rem", color: s.color, marginBottom: "16px" }}>{s.icon}</div>
+          <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 5vw, 3.5rem)", color: "#fff", margin: "0 0 16px", lineHeight: 1 }}>
+            {s.title}
+          </h1>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#555", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "24px" }}>
+            {s.subtitle} · {s.stats.clients} clientes · Desde {s.stats.since}
+          </div>
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", color: "#888", lineHeight: 1.7, maxWidth: "560px" }}>
+            {s.description}
+          </p>
+        </div>
+        <div
+          style={{
+            background: "#0a0a0a",
+            border: `1px solid ${s.color}30`,
+            borderRadius: "4px",
+            padding: "24px 32px",
+            minWidth: "200px",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "3rem", color: s.color }}>{s.stats.clients}</div>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#555", letterSpacing: "0.1em", textTransform: "uppercase" }}>Clientes</div>
+          <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "3rem", color: "#fff", marginTop: "16px" }}>{s.stats.projects}</div>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#555", letterSpacing: "0.1em", textTransform: "uppercase" }}>Proyectos</div>
+        </div>
+      </div>
+
+      {/* Qué incluye */}
+      <div style={{ marginBottom: "80px" }}>
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#a8ff78", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "24px" }}>
+          — Qué incluye
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "12px" }}>
+          {s.what.map((item, i) => (
+            <div
+              key={i}
+              style={{
+                background: "#0a0a0a",
+                border: "1px solid #1a1a1a",
+                borderRadius: "2px",
+                padding: "16px 20px",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+              }}
+            >
+              <span style={{ color: "#a8ff78", fontSize: "0.7rem", flexShrink: 0 }}>✓</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.72rem", color: "#888", lineHeight: 1.4 }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Planes y Precios */}
+      <div style={{ marginBottom: "80px" }}>
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#a8ff78", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "24px" }}>
+          — Planes y Precios
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
+          {s.plans.map((plan, i) => (
+            <div
+              key={i}
+              style={{
+                background: plan.tag === "Más popular" || plan.tag === "Más completo" ? `${s.color}08` : "#0a0a0a",
+                border: `1px solid ${plan.tag ? s.color + "40" : "#1a1a1a"}`,
+                borderRadius: "4px",
+                padding: "28px",
+                position: "relative",
+              }}
+            >
+              {plan.tag && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-1px",
+                    left: "20px",
+                    background: s.color,
+                    color: "#080808",
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: "0.55rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    padding: "3px 10px",
+                    borderRadius: "0 0 2px 2px",
+                  }}
+                >
+                  {plan.tag}
+                </div>
+              )}
+              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#fff", marginBottom: "8px", marginTop: plan.tag ? "8px" : "0" }}>
+                {plan.name}
+              </div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "12px" }}>
+                <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "2rem", color: s.color }}>
+                  {plan.price}€
+                </span>
+                {plan.period && (
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#555" }}>{plan.period}</span>
+                )}
+              </div>
+              <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.7rem", color: "#666", lineHeight: 1.6, margin: "0 0 20px" }}>{plan.desc}</p>
+              <a
+                href="https://wa.me/34642618746"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "block",
+                  textAlign: "center",
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: "0.65rem",
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: plan.tag ? "#080808" : s.color,
+                  background: plan.tag ? s.color : "none",
+                  border: `1px solid ${s.color}60`,
+                  padding: "10px",
+                  borderRadius: "2px",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                }}
+              >
+                Solicitar presupuesto
+              </a>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#444", marginTop: "16px", letterSpacing: "0.04em" }}>
+          * Los precios son orientativos. Cada proyecto se presupuesta según sus necesidades específicas.
+        </p>
+      </div>
+
+      {/* Clientes de este servicio */}
+      {clientsInService.length > 0 && (
+        <div>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#a8ff78", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "24px" }}>
+            — Clientes en este servicio ({clientsInService.length})
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "12px" }}>
+            {clientsInService.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => navigate("cliente", c.id)}
+                style={{
+                  background: "#0a0a0a",
+                  border: "1px solid #1a1a1a",
+                  borderRadius: "2px",
+                  padding: "20px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  transition: "border-color 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#a8ff7840")}
+                onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#1a1a1a")}
+              >
+                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: "0.95rem", color: "#fff", marginBottom: "4px" }}>{c.name}</div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#555", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  {c.sector} · {c.year}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================
+// PÁGINA CLIENTES (GRID)
+// ============================================================
+
+const ClientesPage = ({ navigate }) => {
+  const [filter, setFilter] = useState("todos");
+  const [search, setSearch] = useState("");
+
+  const sectors = ["todos", ...new Set(CLIENTS.map((c) => c.sector))];
+  const filtered = CLIENTS.filter((c) => {
+    const matchSector = filter === "todos" || c.sector === filter;
+    const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || c.sector.toLowerCase().includes(search.toLowerCase());
+    return matchSector && matchSearch;
+  });
+
+  return (
+    <div style={{ padding: "120px clamp(16px, 6vw, 80px) 80px" }}>
+      <Breadcrumb items={[{ label: "Inicio", page: "home" }, { label: "Clientes" }]} navigate={navigate} />
+      <SectionTitle label="— Nuestros Clientes" title={`${CLIENTS.length}+ proyectos`} accent="realizados." />
+
+      {/* Filtros */}
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "32px", alignItems: "center" }}>
+        <input
+          type="text"
+          placeholder="Buscar cliente..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            background: "#0a0a0a",
+            border: "1px solid #1a1a1a",
+            borderRadius: "2px",
+            padding: "8px 16px",
+            fontFamily: "'DM Mono', monospace",
+            fontSize: "0.72rem",
+            color: "#fff",
+            outline: "none",
+            marginRight: "8px",
+          }}
+        />
+        {sectors.slice(0, 8).map((s) => (
+          <button
+            key={s}
+            onClick={() => setFilter(s)}
+            style={{
+              background: filter === s ? "#a8ff78" : "none",
+              border: `1px solid ${filter === s ? "#a8ff78" : "#1a1a1a"}`,
+              borderRadius: "2px",
+              padding: "6px 14px",
+              fontFamily: "'DM Mono', monospace",
+              fontSize: "0.6rem",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: filter === s ? "#080808" : "#666",
+              cursor: "pointer",
+            }}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+
+      {/* Grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "12px" }}>
+        {filtered.map((c) => (
+          <button
+            key={c.id}
+            onClick={() => navigate("cliente", c.id)}
+            style={{
+              background: "#0a0a0a",
+              border: `1px solid ${c.highlight ? "#a8ff7830" : "#1a1a1a"}`,
+              borderRadius: "4px",
+              padding: "24px",
+              textAlign: "left",
+              cursor: "pointer",
+              transition: "border-color 0.2s, background 0.2s",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#a8ff7850";
+              e.currentTarget.style.background = "#0d0d0d";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = c.highlight ? "#a8ff7830" : "#1a1a1a";
+              e.currentTarget.style.background = "#0a0a0a";
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: "1rem", color: "#fff", lineHeight: 1.2 }}>{c.name}</div>
+              {c.status === "active" && (
+                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#a8ff78", flexShrink: 0, marginTop: "4px" }} />
+              )}
+            </div>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#555", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              {c.sector} · {c.year}
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+              {c.services.map((sid) => {
+                const sv = getService(sid);
+                return sv ? (
+                  <span key={sid} style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.55rem", color: sv.color, letterSpacing: "0.06em" }}>
+                    {sv.icon} {sv.title.split(" ")[0]}
+                  </span>
+                ) : null;
+              })}
+            </div>
+            {c.tags.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+                {c.tags.slice(0, 3).map((t) => <Tag key={t}>{t}</Tag>)}
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
+      <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#444", marginTop: "24px" }}>
+        Mostrando {filtered.length} de {CLIENTS.length} clientes. La lista completa supera los 90 proyectos realizados desde 2019.
+      </p>
+    </div>
+  );
+};
+
+// ============================================================
+// PÁGINA CLIENTE INDIVIDUAL
+// ============================================================
+
+const ClientePage = ({ id, navigate }) => {
+  const c = getClient(id);
+  if (!c) return null;
+
+  return (
+    <div style={{ padding: "120px clamp(16px, 6vw, 80px) 80px" }}>
+      <Breadcrumb
+        items={[
+          { label: "Inicio", page: "home" },
+          { label: "Clientes", page: "clientes" },
+          { label: c.name },
+        ]}
+        navigate={navigate}
+      />
+
+      {/* Header cliente */}
+      <div style={{ marginBottom: "64px" }}>
+        <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "16px", flexWrap: "wrap" }}>
+          {c.badge && <Tag>{c.badge}</Tag>}
+          {c.status === "active" && (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#a8ff78", display: "inline-block" }} />
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#a8ff78", letterSpacing: "0.08em", textTransform: "uppercase" }}>Cliente activo</span>
+            </div>
+          )}
+        </div>
+        <h1 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "clamp(2rem, 5vw, 3.5rem)", color: "#fff", margin: "0 0 12px", lineHeight: 1 }}>
+          {c.name}
+        </h1>
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#555", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "20px" }}>
+          {c.sector} · {c.year}
+          {c.url && (
+            <> · <a href={`https://${c.url}`} target="_blank" rel="noopener noreferrer" style={{ color: "#a8ff78", textDecoration: "none" }}>{c.url} ↗</a></>
+          )}
+        </div>
+        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", color: "#888", lineHeight: 1.7, maxWidth: "620px" }}>{c.description}</p>
+
+        {/* Servicios contratados */}
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "24px" }}>
+          {c.services.map((sid) => {
+            const sv = getService(sid);
+            return sv ? (
+              <button
+                key={sid}
+                onClick={() => navigate("servicio", sid)}
+                style={{
+                  background: "#0a0a0a",
+                  border: `1px solid ${sv.color}30`,
+                  borderRadius: "2px",
+                  padding: "8px 16px",
+                  cursor: "pointer",
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: "0.65rem",
+                  color: sv.color,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                {sv.icon} {sv.title}
+              </button>
+            ) : null;
+          })}
+        </div>
+      </div>
+
+      {/* Proyectos del cliente */}
+      {c.projects && c.projects.length > 0 ? (
+        <div>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#a8ff78", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "24px" }}>
+            — Trabajos realizados ({c.projects.length})
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            {c.projects.map((p) => {
+              const sv = getService(p.service);
+              return (
+                <div
+                  key={p.id}
+                  style={{
+                    background: "#0a0a0a",
+                    border: "1px solid #1a1a1a",
+                    borderRadius: "4px",
+                    overflow: "hidden",
+                  }}
+                >
+                  {/* Cabecera del proyecto */}
+                  <div
+                    style={{
+                      padding: "28px 32px",
+                      borderBottom: "1px solid #1a1a1a",
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: "24px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: "flex", gap: "12px", alignItems: "center", marginBottom: "8px" }}>
+                        {sv && <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.8rem", color: sv.color }}>{sv.icon}</span>}
+                        <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#fff", margin: 0 }}>{p.title}</h3>
+                      </div>
+                      {sv && (
+                        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#555", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                          {sv.title}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "flex-end" }}>
+                      {p.tags?.map((t) => <Tag key={t}>{t}</Tag>)}
+                    </div>
+                  </div>
+
+                  {/* Problema / Solución / Resultado */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }}>
+                    {p.problem && (
+                      <div style={{ padding: "24px 28px", borderRight: "1px solid #1a1a1a" }}>
+                        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.55rem", color: "#555", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "10px" }}>
+                          El reto
+                        </div>
+                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.72rem", color: "#888", lineHeight: 1.6, margin: 0 }}>{p.problem}</p>
+                      </div>
+                    )}
+                    {p.solution && (
+                      <div style={{ padding: "24px 28px", borderRight: "1px solid #1a1a1a" }}>
+                        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.55rem", color: "#a8ff78", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "10px" }}>
+                          La solución
+                        </div>
+                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.72rem", color: "#888", lineHeight: 1.6, margin: 0 }}>{p.solution}</p>
+                      </div>
+                    )}
+                    {p.result && (
+                      <div style={{ padding: "24px 28px" }}>
+                        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.55rem", color: "#7fffb0", letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "10px" }}>
+                          El resultado
+                        </div>
+                        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.72rem", color: "#888", lineHeight: 1.6, margin: 0 }}>{p.result}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Imágenes del proyecto */}
+                  {p.images && p.images.length > 0 && (
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: `repeat(${Math.min(p.images.length, 2)}, 1fr)`,
+                        borderTop: "1px solid #1a1a1a",
+                      }}
+                    >
+                      {p.images.map((img, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            aspectRatio: "16/9",
+                            overflow: "hidden",
+                            borderRight: idx < p.images.length - 1 ? "1px solid #1a1a1a" : "none",
+                          }}
+                        >
+                          <img
+                            src={img.url}
+                            alt={img.alt}
+                            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                            onError={(e) => {
+                              e.target.parentElement.style.background = "#0f0f0f";
+                              e.target.style.display = "none";
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <div
+          style={{
+            background: "#0a0a0a",
+            border: "1px solid #1a1a1a",
+            borderRadius: "4px",
+            padding: "40px",
+            textAlign: "center",
+          }}
+        >
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.75rem", color: "#555" }}>
+            Trabajos archivados. Contacta para ver más detalles de este cliente.
+          </p>
+        </div>
+      )}
+
+      {/* Tags del cliente */}
+      {c.tags.length > 0 && (
+        <div style={{ marginTop: "48px", display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          {c.tags.map((t) => <Tag key={t}>{t}</Tag>)}
+        </div>
+      )}
+
+      {/* CTA */}
+      <div
+        style={{
+          marginTop: "64px",
+          padding: "40px",
+          background: "#0a0a0a",
+          border: "1px solid #a8ff7820",
+          borderRadius: "4px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "24px",
+        }}
+      >
+        <div>
+          <p style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#fff", margin: "0 0 8px" }}>
+            ¿Quieres un proyecto similar?
+          </p>
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.72rem", color: "#666", margin: 0 }}>
+            Cuéntanos tu idea y te preparamos un presupuesto sin compromiso.
+          </p>
+        </div>
+        <a
+          href="https://wa.me/34642618746"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: "'DM Mono', monospace",
+            fontSize: "0.72rem",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "#080808",
+            background: "#a8ff78",
+            padding: "12px 24px",
+            borderRadius: "2px",
+            textDecoration: "none",
+            fontWeight: 600,
+          }}
+        >
+          Pedir presupuesto →
+        </a>
+      </div>
+    </div>
+  );
+};
+
+
+// ============================================================
+// PÁGINA PORTFOLIO (TODOS LOS PROYECTOS)
+// ============================================================
+
+const PortfolioPage = ({ navigate }) => {
+  const [filterService, setFilterService] = useState("todos");
+
+  const allProjects = CLIENTS.flatMap((c) =>
+    (c.projects || []).map((p) => ({ ...p, clientId: c.id, clientName: c.name, clientSector: c.sector }))
+  );
+
+  const filtered = allProjects.filter(
+    (p) => filterService === "todos" || p.service === filterService
+  );
+
+  return (
+    <div style={{ padding: "120px clamp(16px, 6vw, 80px) 80px" }}>
+      <Breadcrumb items={[{ label: "Inicio", page: "home" }, { label: "Portfolio" }]} navigate={navigate} />
+      <SectionTitle label="— Portfolio" title="Todos los proyectos" accent="por servicio." />
+
+      {/* Filtros por servicio */}
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "40px" }}>
+        <button
+          onClick={() => setFilterService("todos")}
+          style={{
+            background: filterService === "todos" ? "#a8ff78" : "none",
+            border: `1px solid ${filterService === "todos" ? "#a8ff78" : "#1a1a1a"}`,
+            borderRadius: "2px",
+            padding: "7px 16px",
+            fontFamily: "'DM Mono', monospace",
+            fontSize: "0.62rem",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: filterService === "todos" ? "#080808" : "#666",
+            cursor: "pointer",
+          }}
+        >
+          Todos ({allProjects.length})
+        </button>
+        {SERVICES.map((s) => {
+          const count = allProjects.filter((p) => p.service === s.id).length;
+          if (count === 0) return null;
+          return (
+            <button
+              key={s.id}
+              onClick={() => setFilterService(s.id)}
+              style={{
+                background: filterService === s.id ? s.color : "none",
+                border: `1px solid ${filterService === s.id ? s.color : "#1a1a1a"}`,
+                borderRadius: "2px",
+                padding: "7px 16px",
+                fontFamily: "'DM Mono', monospace",
+                fontSize: "0.62rem",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: filterService === s.id ? "#080808" : "#666",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <span>{s.icon}</span>
+              {s.title.split(" ")[0]} ({count})
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Grid de proyectos */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "16px" }}>
+        {filtered.map((p) => {
+          const sv = getService(p.service);
+          return (
+            <button
+              key={p.id}
+              onClick={() => navigate("cliente", p.clientId)}
+              style={{
+                background: "#0a0a0a",
+                border: "1px solid #1a1a1a",
+                borderRadius: "4px",
+                padding: "0",
+                textAlign: "left",
+                cursor: "pointer",
+                overflow: "hidden",
+                transition: "border-color 0.2s",
+                display: "flex",
+                flexDirection: "column",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = sv?.color + "50" || "#a8ff7850")}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#1a1a1a")}
+            >
+              {/* Imagen del proyecto */}
+              {p.images && p.images.length > 0 ? (
+                <div style={{ aspectRatio: "16/9", overflow: "hidden", background: "#0f0f0f", flexShrink: 0 }}>
+                  <img
+                    src={p.images[0].url}
+                    alt={p.images[0].alt}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.3s" }}
+                    onError={(e) => {
+                      e.target.parentElement.style.display = "none";
+                    }}
+                  />
+                </div>
+              ) : (
+                <div
+                  style={{
+                    aspectRatio: "16/9",
+                    background: `linear-gradient(135deg, #0a0a0a 0%, ${sv?.color || "#a8ff78"}08 100%)`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "3rem", color: sv?.color + "40" || "#a8ff7840" }}>{sv?.icon || "◆"}</span>
+                </div>
+              )}
+              {/* Info */}
+              <div style={{ padding: "20px 24px", flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: sv?.color || "#a8ff78", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  {sv?.icon} {sv?.title} · {p.clientName}
+                </div>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: "1rem", color: "#fff", lineHeight: 1.2 }}>
+                  {p.title}
+                </div>
+                {p.problem && (
+                  <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.68rem", color: "#666", lineHeight: 1.5, margin: 0 }}>
+                    {p.problem.substring(0, 100)}…
+                  </p>
+                )}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "auto", paddingTop: "8px" }}>
+                  {p.tags?.slice(0, 3).map((t) => <Tag key={t}>{t}</Tag>)}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {filtered.length === 0 && (
+        <div style={{ textAlign: "center", padding: "60px", fontFamily: "'DM Mono', monospace", fontSize: "0.75rem", color: "#555" }}>
+          Sin proyectos detallados en esta categoría aún.
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================
+// PÁGINA CONTACTO
+// ============================================================
+
+const ContactoPage = ({ navigate }) => (
+  <div style={{ padding: "120px clamp(16px, 6vw, 80px) 80px" }}>
+    <Breadcrumb items={[{ label: "Inicio", page: "home" }, { label: "Contacto" }]} navigate={navigate} />
+
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "start" }}>
+      <div>
+        <SectionTitle label="— Contacto" title="Hablemos de" accent="tu proyecto." />
+        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", color: "#888", lineHeight: 1.8, marginBottom: "48px" }}>
+          Trabajamos con negocios locales de toda la Costa Blanca. Si tienes un proyecto, una idea o simplemente quieres ver qué podemos hacer por tu negocio, escríbenos sin compromiso.
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <a
+            href="https://wa.me/34642618746?text=Hola%20Javier%2C%20me%20interesa%20hablar%20de%20mi%20proyecto"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
+              background: "#0a0a0a",
+              border: "1px solid #a8ff7830",
+              borderRadius: "4px",
+              padding: "20px 24px",
+              textDecoration: "none",
+              transition: "border-color 0.2s",
+            }}
+          >
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "1.2rem", color: "#a8ff78" }}>◈</span>
+            <div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: "1rem", color: "#fff" }}>WhatsApp directo</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#555", letterSpacing: "0.06em" }}>+34 642 618 746 · Respuesta rápida</div>
+            </div>
+          </a>
+
+          <a
+            href="mailto:hola@innovandesign.com"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
+              background: "#0a0a0a",
+              border: "1px solid #1a1a1a",
+              borderRadius: "4px",
+              padding: "20px 24px",
+              textDecoration: "none",
+            }}
+          >
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "1.2rem", color: "#a8ff78" }}>◻</span>
+            <div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: "1rem", color: "#fff" }}>Email</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#555", letterSpacing: "0.06em" }}>hola@innovandesign.com</div>
+            </div>
+          </a>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
+              background: "#0a0a0a",
+              border: "1px solid #1a1a1a",
+              borderRadius: "4px",
+              padding: "20px 24px",
+            }}
+          >
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "1.2rem", color: "#a8ff78" }}>◎</span>
+            <div>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: "1rem", color: "#fff" }}>Ubicación</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#555", letterSpacing: "0.06em" }}>Benidorm · Costa Blanca · España</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Servicios rápidos */}
+      <div>
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#a8ff78", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "24px" }}>
+          — ¿Qué necesitas?
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "#1a1a1a" }}>
+          {SERVICES.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => navigate("servicio", s.id)}
+              style={{
+                background: "#0a0a0a",
+                border: "none",
+                padding: "20px 24px",
+                textAlign: "left",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "16px",
+                transition: "background 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#0f0f0f")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#0a0a0a")}
+            >
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "1rem", color: s.color, width: "24px" }}>{s.icon}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: "0.9rem", color: "#fff" }}>{s.title}</div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#555", letterSpacing: "0.06em" }}>
+                  Desde {s.plans[0]?.price}€{s.plans[0]?.period || ""}
+                </div>
+              </div>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.65rem", color: "#333" }}>→</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// ============================================================
+// FOOTER
+// ============================================================
+
+const Footer = ({ navigate }) => (
+  <footer
+    style={{
+      borderTop: "1px solid #1a1a1a",
+      padding: "48px clamp(16px, 6vw, 80px)",
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      flexWrap: "wrap",
+      gap: "24px",
+    }}
+  >
+    <div>
+      <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "1rem", color: "#fff", letterSpacing: "-0.02em" }}>INNOVA AND DESIGN</div>
+      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.55rem", color: "#a8ff78", letterSpacing: "0.15em", textTransform: "uppercase", marginTop: "4px" }}>
+        Motor Antigravity v.2026 · Benidorm, España
+      </div>
+    </div>
+    <div style={{ display: "flex", gap: "24px" }}>
+      {["servicios", "clientes", "portfolio", "contacto"].map((p) => (
+        <button
+          key={p}
+          onClick={() => navigate(p)}
+          style={{
+            background: "none",
+            border: "none",
+            fontFamily: "'DM Mono', monospace",
+            fontSize: "0.62rem",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "#555",
+            cursor: "pointer",
+            padding: 0,
+          }}
+        >
+          {p}
+        </button>
+      ))}
+    </div>
+    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.6rem", color: "#333", letterSpacing: "0.06em" }}>
+      © 2026 Innova and Design · hola@innovandesign.com
+    </div>
+  </footer>
+);
+
+// ============================================================
+// APP ROOT
+// ============================================================
+
+function App() {
+  const [page, setPage] = useState("home");
+  const [pageId, setPageId] = useState(null);
+  const topRef = useRef(null);
+
+  const navigate = (newPage, id = null) => {
+    setPage(newPage);
+    setPageId(id);
+    if (topRef.current) topRef.current.scrollTop = 0;
+    else window.scrollTo(0, 0);
+  };
+
+  const renderPage = () => {
+    switch (page) {
+      case "home": return <Home navigate={navigate} />;
+      case "servicios": return <ServiciosPage navigate={navigate} />;
+      case "servicio": return <ServicioPage id={pageId} navigate={navigate} />;
+      case "clientes": return <ClientesPage navigate={navigate} />;
+      case "cliente": return <ClientePage id={pageId} navigate={navigate} />;
+      case "portfolio": return <PortfolioPage navigate={navigate} />;
+      case "contacto": return <ContactoPage navigate={navigate} />;
+      default: return <Home navigate={navigate} />;
+    }
+  };
+
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #080808; color: #fff; }
+        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #080808; }
+        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 2px; }
+        button { cursor: pointer; }
+        a { color: inherit; }
+      `}</style>
+      <div ref={topRef} style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        <Nav currentPage={page} navigate={navigate} />
+        <main style={{ flex: 1 }}>
+          {renderPage()}
+        </main>
+        <Footer navigate={navigate} />
+      </div>
+    </>
+  );
+}
+
+    // Montar la app
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
